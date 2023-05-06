@@ -1,5 +1,7 @@
 # winPsy
 Win-PsyChos1S aka Wince-Pie: Window Info tool
+![Clipboarder 2023 05 06-002](https://user-images.githubusercontent.com/62726599/236634545-b10225c5-4d09-483b-aeaa-b469f45ef7e8.jpg)
+
 ![Clipboarder 2023 05 03-026](https://user-images.githubusercontent.com/62726599/235910780-00d26e7a-dd4d-4091-873f-896424ac3d29.jpg)
 ![screensht (1)](https://user-images.githubusercontent.com/62726599/235888097-20519b18-6b86-4391-a4b0-25a5b419d95f.jpg)
 ![screensht (2)](https://user-images.githubusercontent.com/62726599/235888101-302b3d0b-c86d-4588-b3f0-f9e7284f4a0e.jpg)
