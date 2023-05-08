@@ -35,6 +35,9 @@ gosub,setExplorerTheme ;tt("Started in " a_tickcount-st " ms")
 return,
 
 Animatestartup: ;msgbox
+ gosub,checkchecks
+controlget,htabbody,hwnd,,#327701, ahk_id %hspywnd%
+win_move(htabbody,"",tab_y+26,"","")
 StyleSet(hSpyWnd,"+0x80000000")
 AnimateShow(hSpyWnd) ;%hTab%;winset,style,+0x8000,ahk_id %hTab% ;loop 2 {
 , WinAnimate(img["Banner2"].hpic,"activate center",100)
@@ -47,7 +50,10 @@ guicontrol,hide,% img["Banner3"].hpic
 ; WinAnimate(hTab3,"activate center",250);loop 10;{
 ; WinAnimate((t1t%a_index% ),"activate center",80)  ; }
 , WinAnimate(img["CloseButt2"].hpic,"hide center",100)
- gosub,checkchecks
+
+; winset,redraw,,ahk_id %htab%
+; winset,redraw,,ahk_id %tabbody%
+
  ;Toolbar1update(1)
 return,
 
@@ -176,7 +182,7 @@ TabHeightSlider:=29
 	gui,Add,CheckBox,% "hwndtOPMCheck GSetTopMost vg_Topmost x375 y7" ,% "&UI-Band"
 	gui,Add,CheckBox,% "hwnddHWCheck gSetDHW      x375 y37",% "&Find-hidden"
 	gui,Font,s8,continuum medium 
-	gui,Add,Tab3,% "+hWndhTab vTab gTabHandler x6 y" Tab_Y " w" G_SPY_W-24 " h574 AltSubmit -Wrap +e0x2000000 +0x2000000"
+	gui,Add,Tab3,% "+hWndhTab vTab gTabHandler x7 y" Tab_Y " w" G_SPY_W-24 " h574 AltSubmit -Wrap +e0x2000000 +0x2000000"
 	,% "  General  |  Detail  |  WM's  | Extra | Windows |  Styles  "
 	GUIControl,,%hTab%
 	TAB_SetItemSize(hTab,,TabHeightSlider)
@@ -2972,17 +2978,16 @@ gui,Add,Text,x240 y187 w120 h28 +0x200,%					"Width:"
 gui,Add,Edit,vg_BorderWidth x306 y187 w42 h28
 gui,Add,UpDown,x350 y185 w24 h40,% g_BorderWidth
 gui,Add,Text,x-1 y280 w338 h48 -Background +Border
-gui,Add,Button,gApplySettings x85 y380 w80 h38 +Default,% "&OK"
-gui,Add,Button,gSettingsClose x253 y380 w84 h38 +0x56012000 +E0x8,%	"&Cancel"
-gui Add,Slider,x20 y236 hwndhtabhslider vTabHeightSlider gTabHeightSlider NoTicks Range%MinTabHeight%-%MaxTabHeight% Vertical,% TAB_GetItemHeight(hTab)
+gui,Add,Button,gApplySettings x85 y365 w80 h38 +Default,% "&OK"
+gui,Add,Button,gSettingsClose x253 y365 w84 h38 +0x56012000 +E0x8,%	"&Cancel"
+gui Add,Slider,x48 y246 hwndhtabhslider vTabHeightSlider gTabHeightSlider NoTicks Range%MinTabHeight%-%MaxTabHeight% Vertical,% TAB_GetItemHeight(hTab)
 winset,style,-0x80000000,ahk_id %hSettingsDlg%
 winset,style,+0x40000000,ahk_id %hSettingsDlg%
-gui Add,Text,y236 Section,Height:%A_Space%
-
-gui,Show,% "na hide x" p.x +p.w " y" p.y +300 " w429 h420",% 		"Settings"
+gui Add,Text,x12 y230 Section,Tab-Height:%A_Space%
+gui,Show,% "na hide x" p.x +p.w " y" p.y +300 " w429 h410",% 		"Settings"
 WinAnimate(hSettingsDlg,"activate slide hpos",150)
 
-gui,Settings: +MinSize429x280 +MaxSize429x280
+gui,Settings: +MinSize429x410 +MaxSize429x410
 winactivate,ahk_id %hspywnd%
 loop,parse,% "hxywh,hSettingsDlg",`,
 	{
@@ -3305,6 +3310,21 @@ OnWM_RBUTTONDOWN(wParam,lParam,msg,hWnd) {
 		return,
 }	}
 
+ButtBounce(tbhandle,butts,hilt_ms=199) {
+global
+	loop {
+		loop,% butts {
+			SendMessage,0x45E,a_index-1,0,,ahk_id %tbhandle% ;TB_SETHOTITEM-0x448;
+			sleep,% hilt_ms
+		} loop,% butts {
+			SendMessage,0x45E,butts-a_index,0,,ahk_id %tbhandle%
+			sleep,% hilt_ms
+		}
+	}
+}
+
+~#g::ButtBounce(htb1,6,250)
+
 GuiiconMenu() {
 	global
 	try,menu,new,deleteall
@@ -3579,24 +3599,22 @@ return,
 
 Varz:
 global AppName, alien, r_PID, sep, spyy, CurChanged:=0, TreeIcons:= ResDir . "\TreeIcons.icl", classText
-, hTreeWnd:=0, htab, hLbx, hLbxExStyles, hLbxExtraStyles, hLbxStyles, SbarhWnd, hBtnCmds,gpos
+, hTreeWnd:=0, htab, hLbx, hLbxExStyles, hLbxExtraStyles, hLbxStyles, SbarhWnd, hBtnCmds, gpos
 , ProcTxT ,fukbk ,hfukbk2, lasttrig, hBtn1, hBtn2, hBtn3, hBtn4, hBtn5, ht1b4, ht1b1, hClientCoords, hWindowCoords, hScreenCoords
-
-, dHWCheck, tOPMCheck
+, dHWCheck, tOPMCheck, spyy, xres, yres, r3gk3y, sep, ImageList, args, _msg, TrigG, TrayActiv, parent, ChangeToIcon, oldtimereset
 , hSpyWnd,  hCommandsMenu, hTab, htb, htb2, htb1, p2pwnd, hCloseButt1, hCloseButt2, StyleTabCurrent
 , trigger, Moving, StyleTabisInit, hRemParentButton2, hRemParentButton1, hresetstyle, happlystyle, htabhslider, TabHeightSlider
 , hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg
-, hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogiconCloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, spyy, xres, yres
+, hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogiconCloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, htabbody
 , g_ExtraStyle, g_Minimized, g_Minimize, g_Topmost, g_DetectHiddn, g_hWnd, g_Style, g_ExStyle
-, g_MouseCoordMode:= "Screen", r3gk3y, sep, SubWin_VisibleCount,xmove, xmove_offset, ymove, ymovemove_offset
-global g_WinMsgs:= "", SYSGUI_TBbUTTSZ1:= 64, SYSGUI_TBbUTTSZ2:= 24, _s:= " ", pxx, pyy, xxx:=1
+, g_MouseCoordMode:= "Screen", SubWin_VisibleCount, xmove, xmove_offset, ymove, ymovemove_offset
+global g_WinMsgs:= "", SYSGUI_TBbUTTSZ1:= 64, SYSGUI_TBbUTTSZ2:= 24, _s:= " ", pxx, pyy, xxx:= 1
 , g_Borders:= [], oStyles:= {}, Cursors:= {}, hOldCursor, hOldCursor2, hOldWnd, oldparents:= [], styletabold:= 12, inde_x:= 0
 , Dragging:= False 
 , Workaround:= True
 , FindDlgExist:= False
 , g_TreeShowAll:= False
 , MenuViewerExist:= False, g_findgui_isopen, CloseButtShowLIT
-global ImageList, args, _msg, TrigG, TrayActiv, parent, ChangeToIcon, oldtimereset
 , Img:=[]
   img["cur_link"]:= DllCall("LoadImage","Int",0,"Str",ResDir "\Link.cur","Int",2,"Int",56,"Int",56,"UInt",0x10,"Ptr")
   img["ani_syringe"]:= DllCall("LoadImage","Int",0,"Str", ResDir "\INJEX2.ANI", "Int",2,"Int",56,"Int",56,"UInt",0x10,"Ptr")
