@@ -152,10 +152,14 @@ WM_DPICHANGED() {
 	settimer,Redraw,-3000
 }
 
+~#r::
 Redraw:
 tt("redraw triggered") ;WinAnimate(img["Banner2"].hpic,"hide center",50);
-WinAnimate(img["Banner2"].hpic,"activate center",70)
 winset,redraw,,ahk_id %hSpyWnd%
+winhide,% "ahk_id " img["Banner1"].hpic
+winhide,% "ahk_id " img["Banner2"].hpic
+WinAnimate(img["Banner2"].hpic,"activate center",70)
+WinAnimate(img["Banner1"].hpic,"activate center",70)
 return,
 
 Spy: ;Main Window;
@@ -196,7 +200,7 @@ gui,Tab,1 ;General;
 	gui,Add,Picture,% "vProgIcon +backgroundtrans +hwndhprogicon	x20  y" Tab_Y+34  " w64  h64"
 	,% "C:\Icon\256\Autism5.ico" ;% "C:\Script\AHK\- Script\WinSpy\Resources\INJEX.ani"
 	gui,Font,s7
-	gui,Add,Text,%	"vProgVer  	+backgroundtrans +0x200	x16  y" Tab_Y+100 " w100 h20"
+	gui,Add,Text,%	"vProgVer hwndhfkuu2 	+backgroundtrans +0x200	x16  y" Tab_Y+100 " w100 h20"
 	gui,Font,s9
 	gui,Add,Edit,%	"vProcTxT gSetHandle +0x9   -E0x200 x94  y" Tab_Y+36 " w292 h24"
 	gui,Add,Edit,%	"vEdtHandle2 gSetHandle +0x1		x112 y" Tab_Y+75  " w123 h24"
@@ -211,8 +215,8 @@ gui,Tab,1 ;General;
 ;	gui,Add,Text,	+hwndt1t7 x20 y183 w93 h24 +0x200,%					"Proc:"
 	gui,Add,Edit,%	"+hwndt1t6 vEdtText x86 y" Tab_Y+186 " w435 h24 -E0x200"
 	gui,Font,s9,	continuum light
-	gui,Add,Text,	+hwndt1t9 vclassText x20 y288 w93 h30 +0x200,%			"WinClass:"
-	gui,Add,Edit,	+hwndt1t10 vEdtClass gSetClass x112 y291 w405 h24 -E0x200,
+	gui,Add,Text,	+hwndt1t9 vclassText x20 y292 w93 h30 +0x200,%			"WinClass:"
+	gui,Add,Edit,	+hwndt1t10 vEdtClass gSetClass x112 y295 w405 h24 -E0x200,
 	gui,Add,Text,	 visctltxt x120 y322 w403 h30 x20  w93 h30 +0x200,%		"CtrlClass:"
 	gui,Add,Edit,	vEdtClassNN gSetCtrlN x112 y326 w405 h24 -E0x200,
 	gui,Add,Text,%	"x20 y" Tab_Y+154 " w110 h21 +0x200",%					"S/exStyle:"
@@ -221,18 +225,17 @@ gui,Tab,1 ;General;
 	gui,Add,Edit,%	"vEdtExStyle gSetXStyl x243 y" Tab_Y+154 " w123 h24 -E0x200"
 ;	gui,Add,Edit,	vEdStyleInfo x390 y227 w160 h24 -E0x200
 ;	gui,Add,Text,	x105 y363 w428 0x10,%									"Pfdfd:"
-	gui,Add,ListView,hWndhProcInfo x14 y371 w520 h154 +0x4000 +LV0x14000,% "Property|Value"
-	LV_ModifyCol(1,114), LV_ModifyCol(2,395)
+	gui,Add,ListView,hWndhProcInfo x12 y351 w512 h154 +0x4000 +LV0x14000,% "Property|Value"
 ;	gui,Add,Button,+hwndht1b3 gShowXYWHDlg x400 y419 w125 h35,%	" Magnify  "
 ;	gui,Add,Text,	x99 y438 w300 0x10
 ;	gui,Add,Text,	x20 y450 w93 h24 +0x200,%			"Args:"
 ;	gui,Add,Edit,	vcmdline x90 y450 w449 h24 -E0x200 ReadOnly
-	gui,Add,Text,	x20 y541 w93 h24 +0x200,%			"Architecture:"
-	gui,Add,Edit,	x120  y543 w150 h24 vArch  -E0x200 	ReadOnly
-	gui,Add,Text,	x300 y541 w93 h24 +0x200,%			"Codepage:"
-	gui,Add,Edit,	x415 y543 w150 h24 vCPage  -E0x200 	ReadOnly
-	gui,Add,Text,	x20 y580 w93 h24 +0x200,%			"DPI Context:"
-	gui,Add,Edit,	x120 y582 w146 h24 vDpiC   -E0x200	ReadOnly
+	gui,Add,Text,	x20 y507 w93 h24 +0x200,%			"Architecture:"
+	gui,Add,Edit,	x120  y509 w150 h24 vArch  -E0x200 	ReadOnly
+	gui,Add,Text,	x300 y507 w93 h24 +0x200,%			"Codepage:"
+	gui,Add,Edit,	x415 y509 w150 h24 vCPage  -E0x200 	ReadOnly
+	gui,Add,Text,	x20 y537 w93 h24 +0x200,%			"DPI Context:"
+	gui,Add,Edit,	x120 y539 w146 h24 vDpiC   -E0x200	ReadOnly
 	loop,parse,% "settxt,cmds,mag16,change",`,
 	{
 		hwnd=% (ht1b%a_index%)
@@ -242,7 +245,7 @@ gui,Tab,1 ;General;
 			case,"mag16": Pos:="left"
 		} SetButtonIcon(hwnd,icon,index,pos)
 	} gui,Font,s8,continuum light
-	LV_ModifyCol(1,114), LV_ModifyCol(2,395)
+	LV_ModifyCol(1,110), LV_ModifyCol(2,375)
 	gui,Add,Button,+hwndhbuttendprocess gEndProcess x265 y595 w124 h35,% "End Process"
 	gui,Add,Button,+hwndhopenfolder gOpenFolder x390 y595 w124 h35,% "Open Folder"
 	winset,exstyle,+0x2000000,ahk_id %hProgIcon%
@@ -2551,12 +2554,12 @@ if(Enum[Process]) {
 	SubStr((CreationDate:= Process.CreationDate),1,InStr(CreationDate,".") -1)
 	FormatTime,CreationDate,%CreationDate% D1 T0 ;Short date and time with seconds
 	LV_Delete(), LV_Add("","Path",ExePath)
-	, CMDline:= Process.CommandLine ;LV_Add("","Virtual Size",FormatBytes(Process.VirtualSize,Sep,"mb"))
-	, LV_Add("","Command line",CMDline)
+	, CMDline:= Process.CommandLine ;LV_Add("","VirtualSize",FormatBytes(Process.VirtualSize,Sep,"mb"))
+	, LV_Add("","CmdLine",CMDline)
 	, LV_Add("","Started",CreationDate) ;LV_Add("","Image Type",GetImageType(PID))
 	, LV_Add("","Process ID",Process.ProcessId)
 	, LV_Add("","Thread ID",DllCall("GetWindowThreadProcessId","Ptr",g_hWnd,"Ptr",0))
-	, LV_Add("","Working Size",FormatBytes(Process.WorkingSetSize,Sep,"mb"))
+	, LV_Add("","Working Set",FormatBytes(Process.WorkingSetSize,Sep,"mb"))
 }
 return,
 
@@ -3206,7 +3209,7 @@ return,
 ExitFunc() {
 	global
 	winset,style,-0x40000,ahk_id %hSpyWnd%
-	DllCall("SystemParametersInfo", "uInt",0x57, "uInt",0, "uInt",0, "uInt",0) ; RestoreCursor()
+	DllCall("SystemParametersInfo","uInt",0x57,"uInt",0,"uInt",0,"uInt",0) ; RestoreCursor()
 	settimer,ini_write,-1	; settimer,reg_write,-1 ;not yet imp ;
 	ssleep(5)
 	try,WinAnimate(hSpyWnd,"hide blend",350)
@@ -3310,20 +3313,33 @@ OnWM_RBUTTONDOWN(wParam,lParam,msg,hWnd) {
 		return,
 }	}
 
-ButtBounce(tbhandle,butts,hilt_ms=199) {
-global
-	loop {
+~#g:: 
+if(bbounce:=!bbounce)
+	settimer,bb,1
+else {
+	settimer,bb,off
+	sleep,100
+	SendMessage,0x448,-1,0,,ahk_id %htb%
+} return,
+
+bb:
+buttbounce(htb,17,250)
+return,
+
+ButtBounce(tbhandle="",butts="",hilt_ms=199) {
+	global
+	loop,1 {
 		loop,% butts {
-			SendMessage,0x45E,a_index-1,0,,ahk_id %tbhandle% ;TB_SETHOTITEM-0x448;
+			(!bbounce?return())
+			SendMessage,0x448,a_index-1,0,,ahk_id %tbhandle% ;TB_SETIMAGELIST:=0x430 ;TB_ADDBUTTONSA:= 0x414 TB_SETHOTITEM-0x448
 			sleep,% hilt_ms
 		} loop,% butts {
-			SendMessage,0x45E,butts-a_index,0,,ahk_id %tbhandle%
+			(!bbounce?return())
+			SendMessage,0x448,butts-a_index,0,,ahk_id %tbhandle% ;TB_SETIMAGELIST:=0x430 ;TB_ADDBUTTONSA:= 0x414
 			sleep,% hilt_ms
 		}
 	}
 }
-
-~#g::ButtBounce(htb1,6,250)
 
 GuiiconMenu() {
 	global
@@ -3483,6 +3499,9 @@ OnWM_MOUSEMOVE(wParam,lParam,msg,hWnd2) {
 			case,hBtn4 : gcursor("\INJEX.ANI")
 			case,hBtn5 : gcursor("\INJEX.ANI")
 			case,hBtnCmds : gcursor("\INJEX.ANI")
+			case,hFinda1 : gcursor("\INJEX.ANI")
+			case,fukbk,hfukbk2,hfkuu2,hprogicon : gcursor("\INJEX.ANI")
+			msgbox
 			case,SbarhWnd : gcursor("\hand.CUR") ;0x0410=SB_SETTIPTEXTA / 0x0411=SB_SETTIPTEXTW;
 				if(xs<55) ;msctls_statusbar321;;
 					SendMessage,0x0411, 0, "refresh the view with the eye...",,ahk_id %SbarhWnd%
@@ -3512,6 +3531,7 @@ OnWM_MOUSEMOVE(wParam,lParam,msg,hWnd2) {
 				winset,style,+0x40000000,ahk_id %hSettingsDlg%
 		} switch,hCtl {
 			case,_327701 : settimer,curcheck_general,-1
+			case,fukbk,hfukbk2,hfkuu2,hprogicon: gcursor("\INJEX.ANI")
 		}
 	} return,
 }
@@ -3570,7 +3590,7 @@ OnWM_NCMOUSEMOVE(wParam,lParam,msg,hWnd2) {
 }
 
 Curcheck_General() { ;thread priority, -1
-global CurChanged, CloseButtShowLIT
+	global CurChanged, CloseButtShowLIT
 	CurChanged? (RestoreCursor(), CurChanged:= false):()
 	CloseButtShowLIT? CloseButtShowLITCHK() : ()
 }
@@ -3599,15 +3619,15 @@ return,
 
 Varz:
 global AppName, alien, r_PID, sep, spyy, CurChanged:=0, TreeIcons:= ResDir . "\TreeIcons.icl", classText
-, hTreeWnd:=0, htab, hLbx, hLbxExStyles, hLbxExtraStyles, hLbxStyles, SbarhWnd, hBtnCmds, gpos
+, hTreeWnd:=0, htab, hLbx, hLbxExStyles, hLbxExtraStyles, hLbxStyles, SbarhWnd, hBtnCmds, gpos, hfkuu2
 , ProcTxT ,fukbk ,hfukbk2, lasttrig, hBtn1, hBtn2, hBtn3, hBtn4, hBtn5, ht1b4, ht1b1, hClientCoords, hWindowCoords, hScreenCoords
 , dHWCheck, tOPMCheck, spyy, xres, yres, r3gk3y, sep, ImageList, args, _msg, TrigG, TrayActiv, parent, ChangeToIcon, oldtimereset
 , hSpyWnd,  hCommandsMenu, hTab, htb, htb2, htb1, p2pwnd, hCloseButt1, hCloseButt2, StyleTabCurrent
 , trigger, Moving, StyleTabisInit, hRemParentButton2, hRemParentButton1, hresetstyle, happlystyle, htabhslider, TabHeightSlider
 , hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg
-, hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogiconCloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, htabbody
+, hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogicon, CloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, htabbody
 , g_ExtraStyle, g_Minimized, g_Minimize, g_Topmost, g_DetectHiddn, g_hWnd, g_Style, g_ExStyle
-, g_MouseCoordMode:= "Screen", SubWin_VisibleCount, xmove, xmove_offset, ymove, ymovemove_offset
+, g_MouseCoordMode:= "Screen", SubWin_VisibleCount, xmove, xmove_offset, ymove, ymovemove_offset, bbounce
 global g_WinMsgs:= "", SYSGUI_TBbUTTSZ1:= 64, SYSGUI_TBbUTTSZ2:= 24, _s:= " ", pxx, pyy, xxx:= 1
 , g_Borders:= [], oStyles:= {}, Cursors:= {}, hOldCursor, hOldCursor2, hOldWnd, oldparents:= [], styletabold:= 12, inde_x:= 0
 , Dragging:= False 
