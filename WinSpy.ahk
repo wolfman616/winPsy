@@ -34,34 +34,31 @@ loop,parse,% "INI_Read>Menuz>menu_init>Varz>reg_read>SPY>animatestartup>sethookm
 gosub,setExplorerTheme ;tt("Started in " a_tickcount-st " ms")
 return,
 
-Animatestartup: ;msgbox
- gosub,checkchecks
-controlget,htabbody,hwnd,,#327701, ahk_id %hspywnd%
-win_move(htabbody,"",tab_y+26,"","")
-StyleSet(hSpyWnd,"+0x80000000")
+Animatestartup:
+gosub,checkchecks
+controlget,htabbody,hwnd,,#327701,ahk_id %hspywnd%
+win_move(htabbody,"",tab_y+26,"",""), StyleSet(hSpyWnd,"+0x80000000")
 AnimateShow(hSpyWnd) ;%hTab%;winset,style,+0x8000,ahk_id %hTab% ;loop 2 {
 , WinAnimate(img["Banner2"].hpic,"activate center",100)
-  WinAnimate(img["Banner1"].hpic,"activate center",250), WinAnimate(img["Banner1"].hpic,"hide center",90)
+, WinAnimate(img["Banner1"].hpic,"activate center",250), WinAnimate(img["Banner1"].hpic,"hide center",90)
 , WinAnimate(img["Banner2"].hpic,"hide center",50), WinAnimate(img["Banner2"].hpic,"activate center",70)
 , WinAnimate(img["Banner1"].hpic,"hide center",250), ;}settimer,showSyringe,-2;
- WinAnimate(img["Banner3"].hpic,"activate center",250) ;}settimer,showSyringe,-2;
-guicontrol,hide,% img["Banner3"].hpic
- WinAnimate(img["Banner1"].hpic,"activate center",300)
-; WinAnimate(hTab3,"activate center",250);loop 10;{
-; WinAnimate((t1t%a_index% ),"activate center",80)  ; }
+, WinAnimate(img["Banner3"].hpic,"activate center",250) ;}settimer,showSyringe,-2;
+  guicontrol,hide,% img["Banner3"].hpic
+  WinAnimate(img["Banner1"].hpic,"activate center",300)
+; WinAnimate(hTab3,"activate center",250);loop 10 ;{
+; WinAnimate((t1t%a_index% ),"activate center",80) ;}
 , WinAnimate(img["CloseButt2"].hpic,"hide center",100)
-
-; winset,redraw,,ahk_id %htab%
-; winset,redraw,,ahk_id %tabbody%
-
- ;Toolbar1update(1)
+; winset,RedRaw,,ahk_id %htab%
+; winset,RedRaw,,ahk_id %tabbody%
+; Toolbar1update(1)
 return,
 
 OnMsgz:
-OnExit("exitfunc")
+	OnExit("exitfunc")
 ;	OnMessage(0x202,"OnWM_LBUTTDBL")
-;	OnMessage(0x88,"redraww")
-	OnMessage(43,"redraww")
+;	OnMessage(0x88,"RedRaww")
+	OnMessage(43,"RedRaww")
 	OnMessage(0x201,"WM_LBD")
 	OnMessage(0x404,"WM_TRAYMEN")
 	OnMessage(0x112,"OnWM_SYSCMD")
@@ -94,18 +91,16 @@ OnExit("exitfunc")
 return,
 
 wm_activate(wParam="",lParam="",wmsg="",hwndd="") {
-	global
-	; if (hwndd=hSettingsDlg)
-	; msgbox
-	if (hwndd!=hspywnd)
-		return
-	gui,APCBackMain:+lastfound	;if(!g_Topmost)gui,APCBackMain:-alwaysontop
-	winactivate,ahk_id %hspywnd% 
+	global ;if (hwndd=hSettingsDlg) ; msgbox
+	if(hwndd!=hspywnd)
+		return,
+	gui,APCBackMain:+lastfound ;if(!g_Topmost)gui,APCBackMain:-alwaysontop
+	winactivate,ahk_id %hspywnd%
 	loop,parse,% "htreewnd,hspywnd,hxywh,hSettingsDlg",`,
 	{
 		gk:= %a_loopField%
 		winset,top,,ahk_id %gk%
-	} return, ;1
+	}
 }
 
 EnterSizeMove(wParam="") {
@@ -142,20 +137,18 @@ wm_move(){
 
 wm_moveend() {
 	global ;palmovtrig, Palactive ;if(!Palactive)winset,transparent,240,ahk_id %hpal%
-	SubWin_VisibleCount:="arse"
-;tt("moveend")
-	return,  ;moved(), palmovtrig:= False
+	SubWin_VisibleCount:="arse" ;tt("moveend")
+	return, ;moved(), palmovtrig:= False
 }
 
 WM_DPICHANGED() {
 	global
-	settimer,Redraw,-3000
+	settimer,RedRaw,-3000
 }
 
-~#r::
-Redraw:
-tt("redraw triggered") ;WinAnimate(img["Banner2"].hpic,"hide center",50);
-winset,redraw,,ahk_id %hSpyWnd%
+RedRaw:
+tt("RedRaw Triggered")
+winset,RedRaw,,ahk_id %hSpyWnd%
 winhide,% "ahk_id " img["Banner1"].hpic
 winhide,% "ahk_id " img["Banner2"].hpic
 WinAnimate(img["Banner2"].hpic,"activate center",70)
@@ -167,6 +160,7 @@ TabHeightSlider:=29
 	gtop:= g_Topmost? " +alwaysontop " : ""
 	gui,Spy:New,-dpiscale hWndhSpyWnd +lastfound +toolwindow +resize +0x94CC004C -0x400000 +e0x00010101" %gtop% ; " ;e0x00010101 ;gui,color,772299 0x568F0000
 	winget,fp,processpath,ahk_id %hSpyWnd%
+	(instr(fp,"Program Files")? fp:=strreplace(fp,"Program Files","PrgFiles"))
 	spyy:= hSpyWnd, SbarhWnd:= statusbarinit(), SB_SetText(Format("0x{:X}",hSpyWnd),2), SB_SetText(fp,1)
 	SendMessage,0x80,0,hSmIcon,,ahk_id %hWnd% ; WM_SETICON,ICON_SMALL
 	SendMessage,0x80,1,hLgIcon,,ahk_id %hWnd% ; WM_SETICON,ICON_LARGE
@@ -175,16 +169,16 @@ TabHeightSlider:=29
 	gui,Add,Picture,% "+hwndp2pwnd x" img["Banner2"].xoff " y" img["Banner2"].yoff,%  img["Banner2"].path
 	gui,Add,Picture,% "+hwndp3pwnd x" img["Banner3"].xoff " y" img["Banner3"].yoff,%  img["Banner3"].path
 	img["Banner1"].hpic:= p1pwnd, img["Banner2"].hpic:= p2pwnd, img["Banner3"].hpic:= p3pwnd
-	gui,Add,Picture,% "hWndhCloseButt1 gCloseButtHandla w40 h40 x" G_SPY_W-49 " y2",% img["CloseButt1"]
-	gui,Add,Picture,% "hWndhCloseButt2 gCloseButtHandla w40 h40 x" G_SPY_W-49 " y4 hidden",% img["CloseButt2"]
-	gui,Add,Picture,% "hWndhCloseButt3 gCloseButtHandla w40 h40 x" G_SPY_W-49 " y4 hidden",% img["CloseButt3"]
+	gui,Add,Picture,% "hWndhCloseButt1 gCloseButtHandla w40 h40 x" G_SPY_W-55 " y2",% img["CloseButt1"]
+	gui,Add,Picture,% "hWndhCloseButt2 gCloseButtHandla w40 h40 x" G_SPY_W-55 " y4 hidden",% img["CloseButt2"]
+	gui,Add,Picture,% "hWndhCloseButt3 gCloseButtHandla w40 h40 x" G_SPY_W-55 " y4 hidden",% img["CloseButt3"]
 	guicontrol,Hide,% img["Banner1"].hpic
 	guicontrol,Hide,% img["Banner2"].hpic
 	guicontrol,Hide,% img["Banner3"].hpic
 	img["CloseButt1"].hpic:= hCloseButt1, img["CloseButt2"].hpic:= hCloseButt2
 	gui,Font,s9,continuum light ;msgbox,% g_Topmost
-	gui,Add,CheckBox,% "hwndtOPMCheck GSetTopMost vg_Topmost x375 y7" ,% "&UI-Band"
-	gui,Add,CheckBox,% "hwnddHWCheck gSetDHW      x375 y37",% "&Find-hidden"
+	gui,Add,CheckBox,% "hwndtOPMCheck gSetTopMost vg_Topmost x370 y7" ,% "&UI-Band"
+	gui,Add,CheckBox,% "hwnddHWCheck gSetDHW      x370 y37",% "&Find-hidden"
 	gui,Font,s8,continuum medium 
 	gui,Add,Tab3,% "+hWndhTab vTab gTabHandler x7 y" Tab_Y " w" G_SPY_W-24 " h574 AltSubmit -Wrap +e0x2000000 +0x2000000"
 	,% "  General  |  Detail  |  WM's  | Extra | Windows |  Styles  "
@@ -259,10 +253,10 @@ gui,Tab,2 ;Details;
 	LV_ModifyCol(1,181), LV_ModifyCol(2,333)
 gui,Tab,3 ;Messages
 	gui,Add,Text,x23 y118 w63 h28 +0x200,% "wMsg:"
-	gui,Add,ComboBox,hWndhCbxMsg vCbxMessages x115 y120 w300 h500
+	gui,Add,ComboBox,hWndhCbxMsg vCbxMessages x105 y120 w300 h500
 	SendMessage,0x1701,20,0,,ahk_id %hCbxMsg% ;CB_SETMINVISIBLE;
-	gui,Add,Link,gGoogleSearch x430 y125 w80 h28,% "<a>Google</a>"
-	gui,Add,pic,+backgroundtrans x492 y121 ,% "C:\Icon\24\Google.ico"
+	gui,Add,Link,gGoogleSearch x420 y123 w80 h28,% "<a>Google</a>"
+	gui,Add,pic,+backgroundtrans x482 y121 ,% "C:\Icon\24\Google.ico"
 	gui,Add,Text,x23 y190 w63 h23 +0x200,% "wParam:"
 	gui,Add,Edit,vwParam x105 y190 w260 h28
 	gui,Add,DropDownList,vwParamType x375 y190 w140,% "Number||String"
@@ -300,16 +294,14 @@ gui,Tab,5 ;Windows;
 gui,Tab,6 ;Styles;
 	gui,Font,s9,continuum light
 gui,Add,Custom,ClassSysTabControl32 hWndhStylesTab gStylesTabHandler +0x10 +e0x400000 x13 y104 w511 h420
+gui,Add,Custom,ClassToolbarWindow32	+hwndhtb2 w240 h29 x20 y20 0x9
+Toolbar2Init()
+SendMessage,0x454,0,0x90,,ahk_id %htb2%
+win_move(htb2,461,32,100,24,"")
 gui,Add,Custom,ClassToolbarWindow32 +hwndhtb1 w105 h105 x20 y20
-	Toolbar1Init(htb1) ;TB_STYLE_TOOLTIPS:= 0x100|(TBSTYLE_LIST:=0x1000) ;text @ side of TB
+Toolbar1Init(htb1) ;TB_STYLE_TOOLTIPS:= 0x100|(TBSTYLE_LIST:=0x1000) ;text @ side of TB
 	SendMessage,0x454,0,0x94,,ahk_id %htb1%
 	win_move(htb1,442,32,"","","")
-	gui,Add,Custom,ClassToolbarWindow32	+hwndhtb2 w24 h24 x20 y20 0x9
-	Toolbar2Init()
-	SendMessage,0x454,0,0x90,,ahk_id %htb2%
-	win_move(htb2,461,32,100,24,"")
-	Toolbar_SetButtSize(htb2,24,24)
-	WinSet,Redraw,,ahk_id %htb2%
 	Tab_AddItem(hStylesTab,"   Styles")
 	Tab_AddItem(hStylesTab,"   Ex Styles ") ;ListBox style +0x108:noáegral height and simple multi-select
 	StyleTabCurrent:=1
@@ -342,7 +334,6 @@ gui,Tab ;main-butt-sect;
 			case,"cog","screenshot"  : Pos:= "RIGHT",
 		} SetButtonIcon(hBtn%a_index%,icon,index,pos)
 	}
-
 gui,+lastfound -Resize +MaxSize%G_SPY_W%x%G_SPY_H% +MinSize%G_SPY_W%x%G_SPY_H%
 ;winset,style,&0x40000 ; Show main window ;
 gui,Spy:Show,na x%pxx% y%pyy% w%G_SPY_W% h%G_SPY_H%  Hide,% AppName ; Show main window
@@ -392,7 +383,7 @@ Menu,CommandsMenu,Add,Visible,menHandl4
 Menu,CommandsMenu,Add,Enabled,menHandl4
 Menu,CommandsMenu,Add,Always on Top,menHandl4
 Menu,CommandsMenu,Add
-Menu,CommandsMenu,Add,Redraw Window,menHandl4
+Menu,CommandsMenu,Add,RedRaw Window,menHandl4
 Menu,CommandsMenu,Add
 Menu,CommandsMenu,Add,Close Window,	menHandl4
 	hCommandsMenu:= MenuGetHandle("CommandsMenu")
@@ -423,7 +414,7 @@ WinAnimate(hCloseButt3,"activate center",80) ;WinAnimate(hCloseButt1,"hide cente
 WinAnimate(hCloseButt3,"hide center",900)
 guicontrol,% hclosebutt,% img["CloseButt1"]
 winset,style,-0x0840000,ahk_id %hSpyWnd%
-WinSet,Redraw,,ahk_id %hSpyWnd%
+WinSet,RedRaw,,ahk_id %hSpyWnd%
 WinAnimate(hSpyWnd,"hide blend",330) ;exitapp,;
 goto,SpyEscape
 return,
@@ -442,17 +433,21 @@ TabHandler(Tab) {
 	global ;hCbxMsg, htab ;winset,exstyle,-0x2000000,ahk_id %htab%
 	winset,exstyle,+E0x2000000,ahk_id %htab%
 	switch,Tab {
-		case,"1" : SendMessage,0x0028,%hBtnCmds% ;winset,redraw,;ControlClick,x5 y5,ahk_id %hBtnCmds%
+		case,"1" : SendMessage,0x0028,%hBtnCmds% ;winset,RedRaw,;ControlClick,x5 y5,ahk_id %hBtnCmds%
 			GoSub,LoadProcessProperties ; ,ahk_id %htab%	,,,,Pos ;ControlFocus,,ahk_id %hBtnCmds%
 		case,"3" : GoSub,LoadMessages ;GuiControl,Focus,ahk_id %hBtnCmds%
-			WinSet,Redraw,,ahk_id %hCbxMsg% ; WinSet,Redraw,,ahk_id %hCbxMsg%
+			WinSet,RedRaw,,ahk_id %hCbxMsg% ; WinSet,RedRaw,,ahk_id %hCbxMsg%
 		case,"4" : LV_ModifyCol(1,79)
 		case,"5" : gosub,parent_button_eval
 		case,"6" : trigger:= True ;sleep,100;
 			TB1RePos()
-			settimer,StylesTabHandler,-1	;WinSet,Redraw,,ahk_id %hStylesTab%;
+			TB2RePos()
+			
+			settimer,StylesTabHandler,-1	;WinSet,RedRaw,,ahk_id %hStylesTab%;
 			sleep 50
 			TB1RePos()
+			TB2RePos()
+			
 	}
 }
 
@@ -469,28 +464,30 @@ if(A_guiEvent=="N"||trigger) {
 				guicontrol,Hide,ListBox2
 				guicontrol,Hide,EdtExtraStyleSum
 				guicontrol,Hide,EdtExStyleSum ;guicontrol,Show,ListBox1;
-				guicontrol,Show,EdtStyleSum ;WinSet,Redraw,,ahk_id %hLbxStyles%;
+				guicontrol,Show,EdtStyleSum ;WinSet,RedRaw,,ahk_id %hLbxStyles%;
 			case,"2" : act:= hLbxExStyles
 				guicontrol,Hide,ListBox1
 				guicontrol,Hide,ListBox3
 				guicontrol,Hide,EdtExtraStyleSum
 				guicontrol,Hide,EdtStyleSum ;guicontrol,Show,ListBox2;
-				guicontrol,Show,EdtExStyleSum ;WinSet,Redraw,,ahk_id %hLbxStyles%;
+				guicontrol,Show,EdtExStyleSum ;WinSet,RedRaw,,ahk_id %hLbxStyles%;
 			case,"3" : act:= hLbxExtraStyles
 				guicontrol,Hide,ListBox1
 				guicontrol,Hide,ListBox2
 				guicontrol,Hide,EdtStyleSum
 				guicontrol,Hide,EdtExStyleSum ;guicontrol,Show,ListBox3;
 				guicontrol,Show,EdtExtraStyleSum
-		} SendMessage,0x421,,,,ahk_id %htb1% ;TB_AUTOSIZE;
-		SendMessage,0x421,,,,ahk_id %htb2%
-		win_move(htb1,"","","","",""), win_move(htb2,"","","","","")
+		} ;SendMessage,0x421,,,,ahk_id %htb1% ;TB_AUTOSIZE;
+		;SendMessage,0x421,,,,ahk_id %htb2%
+		;win_move(htb1,"","","","",""), win_move(htb2,"","","","","")
 		TB1RePos()
-		SendMessage,0x454,0,0x94,,ahk_id %htb1% ;only dblbuff
+		TB2RePos()
 		SendMessage,0x454,0,0x90,,ahk_id %htb2% ;only dblbuff	;WinAnimate(htb1,"hide slide hpos",80)
+		SendMessage,0x454,0,0x94,,ahk_id %htb1% ;only dblbuff
 		if((dir:=(styletabold>StyleTabCurrent? "hpos" : "hneg"))="hneg"||"hpos") {
 			if((styletabold=12)||(styletabold=StyleTabCurrent)){
 									winshow,ahk_id %htb1%
+									winshow,ahk_id %htb2%
 			 					winshow,ahk_id %act%
 			 				StyleTabisInit:= True
 						styletabold:= StyleTabCurrent
@@ -500,23 +497,29 @@ if(A_guiEvent=="N"||trigger) {
 				  winhide,ahk_id %htb2%
 				 winhide,ahk_id %act%
 			} Toolbar1update(StyleTabCurrent)
+			 Toolbar2update(StyleTabCurrent)
 			try, {
 			TB1RePos()
+			TB2RePos()
 				 WinAnimate(htb2,"activate slide " dir,50)
 				, WinAnimate(htb1,"activate slide " dir,110)
 				,  WinAnimate(act, "activate slide " dir,200)
 			} Toolbar1update(StyleTabCurrent)
+				Toolbar2update(StyleTabCurrent)
 		} else,if(styletabold=StyleTabCurrent) {
 			winhide,ahk_id %htb1%
 			winhide,ahk_id %act%
 			Toolbar1update(StyleTabCurrent)
+			Toolbar2update(StyleTabCurrent)
 			if(!StyleTabisInit) {
 				try,winshow,ahk_id %htb1%
+				try,winshow,ahk_id %htb2%
 				try,winshow,ahk_id %act%
 				StyleTabisInit:= True
 			}
 		} else,try,{
 				try,winshow,ahk_id %htb1%
+				try,winshow,ahk_id %htb2%
 				try,winshow,ahk_id %act%
 		} styletabold:= StyleTabCurrent
 }	}
@@ -526,12 +529,12 @@ return,
 ~-::xxx--
 ~^!t:: ; guicontrol,move,% htb1,% "x" xxx
 win_move(htb2,442,32,20,20,"")
-Toolbar_SetButtSize(htb2,20,20)
-WinSet,Redraw,,ahk_id %htb2%
+Toolbar_SetButtSize(htb2,76,76)
+WinSet,RedRaw,,ahk_id %htb2%
 win_move(hwnd,442,1,22,25,"")
 SendMessage,0x43C,0,0,,ahk_id %hwnd% ;note: If more than one button has the same idCommand,
 SendMessage,0x454,0,0x90,,ahk_id %hwnd%
-WinSet,Redraw,,ahk_id %htb2%
+WinSet,RedRaw,,ahk_id %htb2%
 t:= wingetpos(htb2)
 tt(t.x " " t.y)
 return,
@@ -550,6 +553,19 @@ Toolbar1Init(hwnd="") { ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	return,htb1
 }
 
+Toolbar2Init() { ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~; }
+	global ;hStylesTab,hSpyWnd,htb2
+	ControlGet,hwnd,hwnd,,ToolbarWindow322,ahk_id %hSpyWnd%
+	(hwnd="")? hwnd:=htb2 ;Win_Move(htb1,500,500.500,500,"") ;	TB_SETMAXTEXTROWS	; Text omitted from bar;
+	win_move(hwnd,442,1,200,25,"")
+	DllCall("SetParent","ptr",htb2,"ptr",hStylesTab)
+	SendMessage,0x454,0,0x90,,ahk_id %hwnd%
+	SendMessage,0x43C,0,0,,ahk_id %hwnd% ;note: If more than one button has the same idCommand,
+	Toolbar2update(4)	;	Only the last button with that idCommand will proceed with call.
+	win_move(hwnd,542,1,220,25,"")
+	return,hwnd
+}
+
 Toolbar1update(il=1) {
 	global SYSGUI_TBbUTTSZ1, TBBUTTON, htb1, vCount, vMsg
 	hIL:= IL_init(il),	vMsg:= A_IsUnicode? 0x444:0x414 ;TB_ADDBUTTONSW=0x444, TB_ADDBUTTONSA=0x414
@@ -563,30 +579,18 @@ Toolbar1update(il=1) {
 	win_move(htb1,442,32,"","","")
 }
 
-Toolbar2Init() { ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~; }
-	global ;hStylesTab,hSpyWnd,htb2
-	ControlGet,hwnd,hwnd,,ToolbarWindow322,ahk_id %hSpyWnd%
-	(hwnd="")? hwnd:=htb2 ;Win_Move(htb1,500,500.500,500,"") ;	TB_SETMAXTEXTROWS	; Text omitted from bar;
-	win_move(hwnd,442,1,22,25,"")
-	DllCall("SetParent","ptr",hwnd,"ptr",hStylesTab)
-	SendMessage,0x43C,0,0,,ahk_id %hwnd% ;note: If more than one button has the same idCommand,
-	SendMessage,0x454,0,0x90,,ahk_id %hwnd%
-	Toolbar2update(hwnd,4)	;	Only the last button with that idCommand will proceed with call.
-	return,hwnd
-}
 
-Toolbar2update(hwnd="",il=4) {
+Toolbar2update(il=4) {
 	global ;SYSGUI_TBbUTTSZ2,TBBUTTON ;global htb2, vCount,	vMsg
-	hIL:= IL_init(il),	vMsg:= A_IsUnicode? 0x444:0x414 ;TB_ADDBUTTONSW=0x444,TB_ADDBUTTONSA=0x414l;
-	SendMessage,0x430,0,% hIL,,ahk_id %htb2% ;TB_SETIMAGELIST=0x430
+	hIL4:= IL_init(4),	vMsg:= A_IsUnicode? 0x444:0x414 ;TB_ADDBUTTONSW=0x444,TB_ADDBUTTONSA=0x414l;
+	SendMessage,0x430,0,hIL4,,ahk_id %htb2% ;TB_SETIMAGELIST=0x430
 	SendMessage,% vMsg,% vCount,% &TBBUTTON,,% "ahk_id " htb2  ;TB_ADDBUTTONSW/TB_ADDBUTTONSA;
-	SendMessage,0x421,,,,ahk_id %htb2% ;TB_AUTOSIZE;
-	Toolbar_SetButtSize(htb2,24,24), win_move(htb2,"","","","")
-	TB2RePos() ;SendMessage,0x454,0,0x90,,ahk_id %hwnd% ;toolbar extra style double buff+hideclipped+vertical
+	Toolbar_SetButtSize(htb2,16,16)
 	winset,exstyle,+0x110,ahk_id %htb2%
 	winset,style,+0x9,ahk_id %htb2%
+	TB2RePos() ;SendMessage,0x454,0,0x90,,ahk_id %hwnd% ;toolbar extra style double buff+hideclipped+vertical
+	win_move(htb2,"","","","")
 }
-
 
 TB1RePos() {
 	global
@@ -599,19 +603,20 @@ TB1RePos() {
 
 TB2RePos() {
 	global
-	win_move(htb2,"","","","","")
+	win_move(htb2,200,-8,200,24,"")
 	SendMessage,0x454,0,0x90,,ahk_id %htb2%
+	win_move(htb2,200,-8,200,24,"")
 }
 
-Toolbar_SetButtSize(hCtrl,W="",H="") {
+Toolbar_SetButtSize(hCtrl,wW,Hh="") {
 	static TB_SETBUTTONSIZE=0x41F
-	IfEqual,H,,SetEnv,H,% W
-	SendMessage,TB_SETBUTTONSIZE,,(H<<16)|W,,ahk_id %hCtrl%
+	;IfEqual,hH,,SetEnv,hH,% Ww
+	SendMessage,TB_SETBUTTONSIZE,0,% Hh<<16|wW,,ahk_id %hCtrl%
 	SendMessage,0x421,,,,ahk_id %hCtrl%	;autosize
 }
 
 WinMove(hWnd="",X="",Y="",W="",H="",Flags="") {	;(hWnd="A"? hWnd:= Winexist("A"))
-	static SWP_NOREDRAW=8,SWP_ASYNCWINDOWPOS=0x4000,SWP_BOTTOM=1,SWP_TOPMOST=-1,SWP_NOTOPMOST=-2
+	static SWP_NORedRaw=8,SWP_ASYNCWINDOWPOS=0x4000,SWP_BOTTOM=1,SWP_TOPMOST=-1,SWP_NOTOPMOST=-2
 	static SWP_NOMOVE=2,SWP_NOSIZE=1,SWP_NOZORDER=4,SWP_NOACTIVATE=0x10,SWP_R=8,SWP_A=0x4000
 	hFlags:= SWP_NOZORDER|SWP_NOACTIVATE|SWP_A
 	loop,parse,Flags,`,
@@ -672,7 +677,7 @@ ShowWindowInfo(ClassNN:= "") {
 				guicontrol,Hide,EdtExStyleSum
 			;	guicontrol,Show,ListBox1
 				guicontrol,Show,EdtStyleSum
-			;	WinSet,Redraw,,ahk_id %hLbxStyles%
+			;	WinSet,RedRaw,,ahk_id %hLbxStyles%
 			case,"2" : act:= hLbxExStyles
 				guicontrol,Hide,ListBox1
 				guicontrol,Hide,ListBox3
@@ -680,7 +685,7 @@ ShowWindowInfo(ClassNN:= "") {
 				guicontrol,Hide,EdtStyleSum
 			;	guicontrol,Show,ListBox2
 				guicontrol,Show,EdtExStyleSum
-				;WinSet,Redraw,,ahk_id %hLbxStyles%
+				;WinSet,RedRaw,,ahk_id %hLbxStyles%
 			case,"3" : act:= hLbxExtraStyles
 				guicontrol,Hide,ListBox1
 				guicontrol,Hide,ListBox2
@@ -825,7 +830,7 @@ if(WStyle) {
 	Leftover:= Format("0x{:08X}", WStyle)
 	guicontrol,,% hLbxStyles,% Leftover . "`t" . Leftover . "||"
 } SendMessage,0x115,6,0,,ahk_id %hLbxStyles% ;WM_VSCROLL;Scroll2top;
-WinSet,Redraw,,ahk_id %hLbxStyles%
+WinSet,RedRaw,,ahk_id %hLbxStyles%
 WExStyle:= g_ExStyle
 ControlGet,Items,List,,,ahk_id %hLbxExStyles% ;Extended styles;
 Loop,Parse,Items,`n
@@ -839,7 +844,7 @@ if(WExStyle) {
 	Leftover:= Format("0x{:08X}",WExStyle)
 	guicontrol,,% hLbxExStyles,% Leftover . "`t" . Leftover . "||"
 } SendMessage,0x115,6,0,,ahk_id %hLbxExStyles% ; WM_VSCROLL, scroll to top
-WinSet,Redraw,,ahk_id %hLbxExStyles%
+WinSet,RedRaw,,ahk_id %hLbxExStyles%
 ExtraStyle:= g_ExtraStyle ; Extra control styles (LV, TV, Toolbar, Tab)
 ControlGet,Items,List,,,ahk_id %hLbxExtraStyles%
 Loop,Parse,Items,`n
@@ -914,10 +919,10 @@ gui,submit,nohide
 switch,nTab:= ErrorLevel +1 {
 	case,"1" : guicontrolGet,Style,,EdtStyleSum
 		WinSet,Style,% Style,ahk_id %g_hWnd%
-		WinSet,Redraw,,ahk_id %g_hWnd%
+		WinSet,RedRaw,,ahk_id %g_hWnd%
 	case,"2" : guicontrolGet,ExStyle,,EdtExStyleSum
 		WinSet,ExStyle,% ExStyle,ahk_id %g_hWnd%
-		WinSet,Redraw,,ahk_id %g_hWnd%
+		WinSet,RedRaw,,ahk_id %g_hWnd%
 	case,"3" : guicontrolGet,ExtraStyle,,EdtExtraStyleSum
 		WinGetClass,Class,ahk_id %g_hWnd%
 		switch,Class {
@@ -929,7 +934,7 @@ switch,nTab:= ErrorLevel +1 {
 		} sendmessage,% _msg,0,% ExtraStyle,,ahk_id %g_hWnd%	;CBEM_SETEXTENDEDSTYLE
 		((errorlevel="Fail")? msgb0x(ErrorLevel,5))
 } DllCall("SetWindowPos","Ptr",g_hWnd,"UInt",0,"Int",0,"Int",0,"Int",0,"Int",0,"UInt",0x17)
-WinSet,Redraw,,ahk_id %g_hWnd% ; 0x17 SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE
+WinSet,RedRaw,,ahk_id %g_hWnd% ; 0x17 SWP_NOSIZE|SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE
 return,
 
 ResetStyle:
@@ -974,7 +979,7 @@ switch,A_ThisMenuItem {
 	case,"Enabled" 		: DllCall("EnableWindow","Ptr",g_hWnd,"UInt",!IsWindowEnabled(g_hWnd))
 	case,"Visible" 		: ShowWindow(g_hWnd,!IsWindowVisible(g_hWnd))
 	case,"Close Window"	: WinClose,ahk_id %g_hWnd%
-	case,"Redraw Window": WinSet,Redraw,,ahk_id %g_hWnd%
+	case,"RedRaw Window": WinSet,RedRaw,,ahk_id %g_hWnd%
 } return,
 
 UpdateCommandsMenu() {
@@ -1511,7 +1516,7 @@ return,
 FindWindow:
 gui,Find:Submit,NoHide
 gui,ListView,% hFindList
-guicontrol -Redraw,% hFindList
+guicontrol -RedRaw,% hFindList
 LV_Delete()
 WinGet,WinList,List
 Loop,% WinList {
@@ -1536,7 +1541,7 @@ Loop,% WinList {
 	}
 }
 
-guicontrol +Redraw, %hFindList%
+guicontrol +RedRaw, %hFindList%
 return,
 
 ShowFindDlg:
@@ -1800,20 +1805,21 @@ global
 }
  */
 
-IL_init(il=1) {
+IL_init(il="1") {
 	global 	; switch il {; case3: ;crucial to determining ctlclass specific tb-items.	; }
 	static ic1:= "C:\Script\AHK\- Script\WinSpy\winctrls3.ico,C:\Script\AHK\- Script\WinSpy\hv48.ico,C:\Script\AHK\- Script\WinSpy\borderthick.ico,C:\Script\AHK\- Script\WinSpy\eye48.ico,C:\Script\AHK\- Script\WinSpy\menu48.ico,C:\Script\AHK\- Script\WinSpy\DISABLED_48.ICO"
 	,ic2:= "Resources\filedrop.ico,C:\Script\AHK\- Script\WinSpy\Resources\help48.ico,C:\Icon\256\reggie_watts.ico,C:\Script\AHK\- Script\WinSpy\Resources\layers48.ico,C:\Script\AHK\- Script\WinSpy\Resources\trans48.ico,resources\na_48.ico"
 	,ic3:= "C:\Icon\48\disabled2_483.ico,C:\Script\AHK\- Script\WinSpy\winctrls3.ico,C:\Script\AHK\- Script\WinSpy\hv48.ico,C:\Script\AHK\- Script\WinSpy\borderthick.ico,C:\Script\AHK\- Script\WinSpy\eye48.ico,C:\Script\AHK\- Script\WinSpy\menu48.ico"
-	,ic4:= "C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\ey3y32 24.ico,C:\Script\AHK\- Script\WinSpy\Resources\crossed24_5.ico,C:\Script\AHK\- Script\WinSpy\Resources\redo0_24.ico,C:\Script\AHK\- Script\WinSpy\Resources\undo0_24.ico,C:\Script\AHK\- Script\WinSpy\Resources\mag1_24.ico,C:\Script\AHK\- Script\WinSpy\Resources\Copy_24.ico"
+	,ic4:= "C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico"
+	;ic4:= "C:\Script\AHK\- Script\WinSpy\Resources\cog24.ico,C:\Script\AHK\- Script\WinSpy\Resources\ey3y32 24.ico,C:\Script\AHK\- Script\WinSpy\Resources\crossed24_5.ico,C:\Script\AHK\- Script\WinSpy\Resources\redo0_24.ico,C:\Script\AHK\- Script\WinSpy\Resources\undo0_24.ico,C:\Script\AHK\- Script\WinSpy\Resources\mag1_24.ico,C:\Script\AHK\- Script\WinSpy\Resources\Copy_24.ico"
 	icon_array:= []
-	icon_array.push(ic%il%)
+	;icon_array.push(ic%il%)
 	loop,parse,% ic%il%,`,
 		icon_array[ max_i:= A_index ]:= A_loopfield
 	for,i,icopath in icon_array	;iBitmap
-		IL_Add(hIL2,icopath,0)	;idCommand
+		IL_Add(hIL%il%,icopath,0)	;idCommand
 	max_i>6? vCount:= 6 : vCount:= max_i
-	hIL2:= IL_Create(vCount,2,64),	vSize:= A_PtrSize=8? 32:20
+	hIL%il%:= IL_Create(vCount,2,2),	vSize:= A_PtrSize=8? 32:20
 	VarSetCapacity(TBBUTTON,vCount*vSize,0)
 	Loop,% vCount {
 		switch,a_index {
@@ -1826,22 +1832,16 @@ IL_init(il=1) {
 		, NumPut(&vTxt%A_Index%,TBBUTTON,vOffset+(A_PtrSize=8? 24:16),"Ptr") ;iString;
 	} ; hIL2:= IL_Create(5, 2, 64)
 	for,i,icopath in icon_array				;iBitmap;
-		IL_Add(hIL2,icopath,0) 				;idCommand;
-	tabicons_init:= []			;fsState	;TBSTATE_ENABLED:= 4;
-	loop,4									;str=tabicons_init.push("ahk" . a_index);
-		tabicons_init.push("ahk" . a_index)	;loop(6,str);
-	hIL1:= TAB_CreateImageList(32) 			;Create and populate image list;
-	for,i,f in tabicons_init
-		IL_Add(hIL1,IcoDir . "\" . f . ".ico")
-	return,byref hIL2
+		IL_Add(hIL%il%,icopath,0) 				;idCommand;
+	return,byref hIL%il%
 }
 
 statusbarinit() {
 	global
-	static init:= 0, inc:= 452, alienhic
+	static init:= 0, inc:= 412, alienhic
 	(init=0? alienhic:= ico2hicon(alien))
 	Gui,spy:Add,StatusBar,+hWndSbarhWnd +e0x2000000
-	SB_SetParts(inc,inc)
+	SB_SetParts(inc,100)
 	SendMessage,0x40F,0,% alienhic,,ahk_id %SbarhWnd%
 	return,SbarhWnd
 }
@@ -2057,7 +2057,7 @@ if(IsChild(g_hWnd)) {
 		SetWindowPos(g_hWnd,X,Y,EdtW,EdtH,0,0x14) ; SWP_NOACTIVATE | SWP_NOZORDER
 	}
 } else,WinMove,ahk_id %g_hWnd%,,% EdtX,% EdtY,% EdtW,% EdtH
-WinSet,Redraw,,ahk_id %g_hWnd%
+WinSet,RedRaw,,ahk_id %g_hWnd%
 return,
 
 ResetXYWH:
@@ -2183,7 +2183,7 @@ AddUniqueClass(ClassName) {
 	}	} (Unique? Classes.Push(ClassName))
 }
 
-guicontrol,+Redraw,% hFindList
+guicontrol,+RedRaw,% hFindList
 return,
 
 MatchCriteria(Text,Class,Process) {
@@ -2251,7 +2251,7 @@ if(WinExist("ahk_id" . hTreeWnd)) {
 	winset,style,-0x80000000, ahk_id %hTreewnd%
 	winset,exstyle,-0x200, ahk_id %hTreewnd%
 	gui,Show,% "na hide x" p.x-518 " y" p.y " w545 h" G_SPY_H -13 " hide",% "WinPsY-Tree" ;%AppName% -Tree
-	WinAnimate(hTreeWnd,"activate slide hneg",200) ;	winset,redraw,,ahk_id %hTreewnd%
+	WinAnimate(hTreeWnd,"activate slide hneg",200) ;	winset,RedRaw,,ahk_id %hTreewnd%
 	winset,top,,ahk_id %hspywnd%
 	loop,parse,% "hspywnd,hxywh,hSettingsDlg",`,
 	{
@@ -2527,18 +2527,18 @@ if(Enum[Process]) {
 	sleep 20
 	;winanimate(hProgIcon,"activate slide vneg",120)
 ;	 winanimate(hfukbk2,"activate center",120)
-	;winset,redraw,,ahk_id %hfukbk2%
-	;winset,redraw,,ahk_id %fukbk%
+	;winset,RedRaw,,ahk_id %hfukbk2%
+	;winset,RedRaw,,ahk_id %fukbk%
 	;guicontrol,% "+backgroundtrans",ProgIcon
-	;winset,redraw,,ahk_id %hProgIcon%
+	;winset,RedRaw,,ahk_id %hProgIcon%
 	sleep 20
 	;guicontrol,+backgroundtrans,ahk_id %hProgIcon%
 	;	guicontrol,+backgroundtrans,ahk_id %fukbk%
 	;guicontrol,+backgroundtrans,ahk_id %hfukbk2%
 	;guicontrol,show,ProgIcon
 
-	;winset,redraw,,ahk_id %hProgIcon%
-	;winset,redraw,,ahk_id %hProgIcon%
+	;winset,RedRaw,,ahk_id %hProgIcon%
+	;winset,RedRaw,,ahk_id %hProgIcon%
 ;win_move(fukbk,"","",76,76,-1)
 ;win_move(hProgIcon,"","" ,64,64,-1)
 ;win_move(hfukbk2,"","" ,76,76,-1)
@@ -2838,7 +2838,7 @@ Scintilla_GetLexerLanguage(hWnd) {
 }
 
 GetClassStyles(Style) {
-	Static CS:= {0x1: "CS_VREDRAW", 0x2: "CS_HREDRAW", 0x8: "CS_DBLCLKS", 0x20: "CS_OWNDC"
+	Static CS:= {0x1: "CS_VRedRaw", 0x2: "CS_HRedRaw", 0x8: "CS_DBLCLKS", 0x20: "CS_OWNDC"
 	,	0x40: "CS_CLASSDC", 0x80: "CS_PARENTDC", 0x200: "CS_NOCLOSE", 0x800: "CS_SAVEBITS"
 	,	0x1000: "CS_BYTEALIGNCLIENT", 0x2000: "CS_BYTEALIGNWINDOW", 0x4000: "CS_GLOBALCLASS"
 	,				0x10000: "CS_IME", 0x20000: "CS_DROPSHADOW"},	Styles:= " ("
@@ -2983,10 +2983,10 @@ gui,Add,UpDown,x350 y185 w24 h40,% g_BorderWidth
 gui,Add,Text,x-1 y280 w338 h48 -Background +Border
 gui,Add,Button,gApplySettings x85 y365 w80 h38 +Default,% "&OK"
 gui,Add,Button,gSettingsClose x253 y365 w84 h38 +0x56012000 +E0x8,%	"&Cancel"
-gui Add,Slider,x48 y246 hwndhtabhslider vTabHeightSlider gTabHeightSlider NoTicks Range%MinTabHeight%-%MaxTabHeight% Vertical,% TAB_GetItemHeight(hTab)
+gui Add,Slider,x48 y246 hwndhtabhslider altsubmit vTabHeightSlider gTabHeightSlider NoTicks Range%MinTabHeight%-%MaxTabHeight% Vertical,% TAB_GetItemHeight(hTab)
 winset,style,-0x80000000,ahk_id %hSettingsDlg%
 winset,style,+0x40000000,ahk_id %hSettingsDlg%
-gui Add,Text,x12 y230 Section,Tab-Height:%A_Space%
+gui Add,Text,x12 y230 Section,Tab-Height:%A_Space% (disfunctional)
 gui,Show,% "na hide x" p.x +p.w " y" p.y +300 " w429 h410",% 		"Settings"
 WinAnimate(hSettingsDlg,"activate slide hpos",150)
 
@@ -3032,18 +3032,24 @@ isSingleton() {
 			return,
 }	}	}
 
-redRaww(){
+RedRaww(){
 	msgbox never prox
 }
 
 CheckChecks:
 if(g_Topmost){
-guicontrol,,% topmcheck,1
+	;guicontrol,,% topmcheck,1
+	SendMessage,0xF3,2,0,,% "ahk_id " topmcheck ;BM_SETSTATE
+	;SendMessage,0xF1,2,0,,% "ahk_id " topmcheck ;BM_SETSTATE
+
 	;loop,parse,% "hSettingsDlg,hxywhhScrollInfo,hFindDlg,hTreeWnd",`,
 	;	winset,top,,% "ahk_id " %a_loopField%
 }
 if(g_DetectHiddn)
 	guicontrol,,% dhwcheck,1
+	SendMessage,0xF3,2,0,,% "ahk_id " dhwcheck ;BM_SETSTATE
+	;SendMessage,0xF1,2,0,,% "ahk_id " dhwcheck ;BM_SETSTATE
+
 return,
 
 Targetmanually() {
@@ -3111,7 +3117,7 @@ switch,A_ThisMenuItem {
 	case,"Enabled" : DllCall("EnableWindow","Ptr",g_hWnd,"UInt",!IsWindowEnabled(g_hWnd))
 	case,"Always on Top": WinSet,Top,,ahk_id %g_hWnd%;WinSet,AlwaysOnTop,Toggle,ahk_id %g_hWnd%
 	case,"Close Window" : WinClose,ahk_id %g_hWnd%
-	case,"Redraw Window": WinSet,Redraw,,ahk_id %g_hWnd%
+	case,"RedRaw Window": WinSet,RedRaw,,ahk_id %g_hWnd%
 }
 return,
 
@@ -3396,10 +3402,10 @@ WM_LBD(wParam="",lParam="",unknown="",hwnd="") {
 				ShowWindowInfoIfExist(EdtHandle)
 				return,
 			}
-		case,hFinda1,: return,
+		case,hFinda1,htb1: return,
 		case,htabhslider: winactivate , ahk_id %hSettingsDlg%
 			try,GuiControl,Focus,tabhslider
-			return,tt("sider not available (bug)")
+			return,tt("slider not functionally available (gui-bug)")
 		default: GPos:= wingetpos(hspywnd), Moving:= True, Then:= a_tickcount ; case,hSpyWnd,hStylesTab,htab: rECT:= false
 			try,GuiControl,Focus,SysListView321
 			ssleep(1) ;coordMode,Pixel,Screen ;coordMode,mouse,Screen
@@ -3416,10 +3422,14 @@ OnWM_LBUTTONUP(wParam="",lParam="",msg="",hWnd="") {
 	static SPI_SetCurSORS=0x57
 	ymove:= ymove_offset:= xmove:= xmove_offset:= ""
 	DllCall("SystemParametersInfo","uint",SPI_SetCurSORS,"uint",0,"ptr",0,"uint",0)
-	if(dragging){
+	if(dragging) {
 		Loop,4
 			try,gui,% A_Index +90 ":hide"
 		settimer,destroyBorders,-10
+			winget,fp,processpath,ahk_id %g_hWnd%
+		(instr(fp,"program files")? fp:= strreplace(fp,"program files","Prgfiles"))
+		(instr(fp,"windows\system")? fp:= strreplace(fp,"windows\system","sys"))
+		SB_SetText(Format("0x{:X}",g_hWnd),2), SB_SetText(fp,1)
 		if(IsWindowVisible(hTreeWnd))
 			GoSub,LoadTree
 		if(IsWindowVisible(hXYWH))
@@ -3489,8 +3499,8 @@ OnWM_MOUSEMOVE(wParam,lParam,msg,hWnd2) {
 	} else {
 		init:=0
 		switch,hWnd2 {
-			case,hCloseButt1,hCloseButt2 : gcursor("\doomdie.ani")
-				settimer,CloseButtShowLITenable,-10
+			case,hCloseButt1,hCloseButt2 : ;gcursor("\doomdie.ani")
+				settimer,CloseButtShowLITenable,-1
 			case,hBtn1 : gcursor("\hand.CUR")
 				SendMessage,0x0411,0,"Search *.*  wingui",,ahk_id %hWndhBtn1% ;msctls_statusbar321 ;0x0410 SB_SETTIPTEXTA / 0x0411 SB_SETTIPTEXTW;
 			case,hBtn2 : gcursor("\hand.CUR")
@@ -3519,6 +3529,7 @@ OnWM_MOUSEMOVE(wParam,lParam,msg,hWnd2) {
 			case,hStylesTab : gcursor("\hand256.ANI")
 			case,ht1b1 : gcursor("\hand.CUR")
 			case,ht1b4 : gcursor("\hand.CUR")
+			case,dHWCheck,tOPMCheck : gcursor("\hand.CUR")
 			case,hFinda1 : gcursor("\INJEX.ANI")
 			case,hLbxStyles : gcursor("\hand.CUR")
 			case,hLbxExStyles : gcursor("\hand.CUR")
@@ -3623,7 +3634,7 @@ global AppName, alien, r_PID, sep, spyy, CurChanged:=0, TreeIcons:= ResDir . "\T
 , ProcTxT ,fukbk ,hfukbk2, lasttrig, hBtn1, hBtn2, hBtn3, hBtn4, hBtn5, ht1b4, ht1b1, hClientCoords, hWindowCoords, hScreenCoords
 , dHWCheck, tOPMCheck, spyy, xres, yres, r3gk3y, sep, ImageList, args, _msg, TrigG, TrayActiv, parent, ChangeToIcon, oldtimereset
 , hSpyWnd,  hCommandsMenu, hTab, htb, htb2, htb1, p2pwnd, hCloseButt1, hCloseButt2, StyleTabCurrent
-, trigger, Moving, StyleTabisInit, hRemParentButton2, hRemParentButton1, hresetstyle, happlystyle, htabhslider, TabHeightSlider
+, trigger, Moving, StyleTabisInit, hRemParentButton2, hRemParentButton1, hresetstyle, happlystyle, htabhslider, TabHeightSlider, hIL4
 , hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg
 , hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogicon, CloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, htabbody
 , g_ExtraStyle, g_Minimized, g_Minimize, g_Topmost, g_DetectHiddn, g_hWnd, g_Style, g_ExStyle
