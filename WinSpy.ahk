@@ -146,6 +146,21 @@ WM_DPICHANGED() {
 	settimer,RedRaw,-3000
 }
 
+DWMCompTogl: ;wip
+if(g_dwmcomposition:=!g_dwmcomposition) { ; #2: Disable DWM rendering of the window's frame.
+	DllCall("dwmapi\DwmSetWindowAttribute", "ptr", WinExist("Window Title")
+	, "uint", DWMWA_NCRENDERING_POLICY := 2, "int*", DWMNCRP_DISABLED := 1, "uint", 4)
+	guicontrol,,% hdwmchk ,1
+} else { ; To undo it (this might also cause any set region to be ignored):
+	DllCall("dwmapi\DwmSetWindowAttribute", "ptr", WinExist("Window Title")
+	, "uint", DWMWA_NCRENDERING_POLICY := 2, "int*", DWMNCRP_ENABLED := 2, "uint", 4)
+	guicontrol,,% hdwmchk,0 ; To undo it (this might also cause any set region to be ignored):
+} DllCall("dwmapi\DwmSetWindowAttribute","ptr",WinExist("Window Title"),"uint",DWMWA_NCRENDERING_POLICY:= 2,"int*",DWMNCRP_ENABLED:= 2,"uint",4)
+return,
+
+Setregion: ;wip
+return,
+
 RedRaw:
 tt("RedRaw Triggered")
 winset,RedRaw,,ahk_id %hSpyWnd%
@@ -183,7 +198,7 @@ TabHeightSlider:=29
 	gui,Add,Tab3,% "+hWndhTab vTab gTabHandler x7 y" Tab_Y " w" G_SPY_W-24 " h574 AltSubmit -Wrap +e0x2000000 +0x2000000"
 	,% "  General  |  Detail  |  WM's  | Extra | Windows |  Styles  "
 	GUIControl,,%hTab%
-	TAB_SetItemSize(hTab,,TabHeightSlider)
+	TAB_SetItemSize(hTab,,TabHeightSlider)	
 	Tab_Y:= Tab_Y_init+ TabHeightSlider-22
 	gui,Font,s9,continuum light
 	StyleSet(hSpyWnd,"+0x80000000")
@@ -207,29 +222,37 @@ gui,Tab,1 ;General;
 	gui,Add,Edit,%	"vEdtSize  -E0x200 ReadOnly  +0x1 	x322 y" Tab_Y+122 " w204 h24"
 	gui,Add,Text,%	"+hwndt1t7 vTxtText			 +0x200	x20  y" Tab_Y+182 " w93  h30",% "Text:"
 ;	gui,Add,Text,	+hwndt1t7 x20 y183 w93 h24 +0x200,%					"Proc:"
-	gui,Add,Edit,%	"+hwndt1t6 vEdtText x86 y" Tab_Y+186 " w435 h24 -E0x200"
+	gui,Add,Edit,%	"+hwndt1t6 vEdtText x86 y" Tab_Y+186 " w296 h24 -E0x200"
 	gui,Font,s9,	continuum light
 	gui,Add,Text,	+hwndt1t9 vclassText x20 y292 w93 h30 +0x200,%			"WinClass:"
 	gui,Add,Edit,	+hwndt1t10 vEdtClass gSetClass x112 y295 w405 h24 -E0x200,
 	gui,Add,Text,	 visctltxt x120 y322 w403 h30 x20  w93 h30 +0x200,%		"CtrlClass:"
 	gui,Add,Edit,	vEdtClassNN gSetCtrlN x112 y326 w405 h24 -E0x200,
 	gui,Add,Text,%	"x20 y" Tab_Y+154 " w110 h21 +0x200",%					"S/exStyle:"
-	gui,Add,Button,+hwndht1b1 vBtnSetText gSetText	x390 y224 w125 h30	,%	"   Set Text  "
+	gui,Add,Button,+hwndhregionbutt vBtnSetregion gShowsetregion	x390 y230 w125 h28	,%	"  Region  "
 	gui,Add,Edit,%	"vEdtStyle gSetStyle   x112 y" Tab_Y+154 " w123 h24 -E0x200" ;+0x1,
 	gui,Add,Edit,%	"vEdtExStyle gSetXStyl x243 y" Tab_Y+154 " w123 h24 -E0x200"
 ;	gui,Add,Edit,	vEdStyleInfo x390 y227 w160 h24 -E0x200
 ;	gui,Add,Text,	x105 y363 w428 0x10,%									"Pfdfd:"
 	gui,Add,ListView,hWndhProcInfo x12 y351 w512 h154 +0x4000 +LV0x14000,% "Property|Value"
-;	gui,Add,Button,+hwndht1b3 gShowXYWHDlg x400 y419 w125 h35,%	" Magnify  "
+;	gui,Add,Button,+hwndht1b3 gShowXYWHDlg x400 y419 w125 h35,%		" Magnify  "
 ;	gui,Add,Text,	x99 y438 w300 0x10
 ;	gui,Add,Text,	x20 y450 w93 h24 +0x200,%			"Args:"
 ;	gui,Add,Edit,	vcmdline x90 y450 w449 h24 -E0x200 ReadOnly
+	gui,Add,Button,% "+hwndht1b1 vBtnSetText gSetText	x390 y" Tab_Y+182 " w125 h30",%	"   Set Text  "
 	gui,Add,Text,	x20 y507 w93 h24 +0x200,%			"Architecture:"
 	gui,Add,Edit,	x120  y509 w150 h24 vArch  -E0x200 	ReadOnly
 	gui,Add,Text,	x300 y507 w93 h24 +0x200,%			"Codepage:"
 	gui,Add,Edit,	x415 y509 w150 h24 vCPage  -E0x200 	ReadOnly
 	gui,Add,Text,	x20 y537 w93 h24 +0x200,%			"DPI Context:"
 	gui,Add,Edit,	x120 y539 w146 h24 vDpiC   -E0x200	ReadOnly
+	gui,Add,CheckBox,% "hwndhDWMChk gDWMCompTogl vg_dwmcomposition x313 y537" ,% "&DWM-Composition"
+	gui,Add,Text,	x300 y565 w108 h24 +0x200,%			"AHK Children?:"
+	gui,Add,Edit,	x420 y566 w146 h24 vahkchildrentruefalse -E0x200	ReadOnly
+	gui,Add,Text,	x20 y567 w93 h24 +0x200,%			"TransColor:"
+	gui,Add,Edit,	x120 y569 w146 h24 vTranscol   -E0x200	ReadOnly
+	gui,Add,Text,	x20 y598 w93 h24 +0x200,%		"Opacity:"	
+	gui,Add,Edit,	x120 y600 w146 h24 vTransval   -E0x200	ReadOnly 
 	loop,parse,% "settxt,cmds,mag16,change",`,
 	{
 		hwnd=% (ht1b%a_index%)
@@ -293,8 +316,10 @@ gui,Tab,5 ;Windows;
 	gui,Add,Link,vOwnerLink gLinkToHandle x97 y600 w120 h20,<a>0x00000000</a>
 gui,Tab,6 ;Styles;
 	gui,Font,s9,continuum light
-gui,Add,Custom,ClassSysTabControl32 hWndhStylesTab gStylesTabHandler +0x10 +e0x400000 x13 y104 w511 h420
-gui,Add,Custom,ClassToolbarWindow32	+hwndhtb2 w240 h29 x20 y20 0x9
+gui,Add,Custom,ClassSysTabControl32 hWndhStylesTab gStylesTabHandler +0x10 +e0x400000 x13 y104 w504 h420
+	TAB_SetItemSize(hStylesTab,,TabHeightSlider)
+
+;gui,Add,Custom,ClassToolbarWindow32	+hwndhtb2 w240 h29 x20 y20 0x9
 Toolbar2Init()
 SendMessage,0x454,0,0x90,,ahk_id %htb2%
 win_move(htb2,461,32,100,24,"")
@@ -306,14 +331,14 @@ Toolbar1Init(htb1) ;TB_STYLE_TOOLTIPS:= 0x100|(TBSTYLE_LIST:=0x1000) ;text @ sid
 	Tab_AddItem(hStylesTab,"   Ex Styles ") ;ListBox style +0x108:noáegral height and simple multi-select
 	StyleTabCurrent:=1
 	gui,Add,ListBox
-, hWndhLbxStyles   vLbxStyles   gLbxStylesHandler x83 y134 w434 h384 +0x108 -E0x200 t0 T120 +e0x8004000 ;-0x200000
+, hWndhLbxStyles   vLbxStyles   gLbxStylesHandler x82 y138 w430 h384 +0x108 -E0x200 t4 T114 +e0x8004000 ;-0x200000
 	gui,Add,ListBox
-, hWndhLbxExStyles vLbxExStyles gLbxStylesHandler x83 y134 w434 h384 +0x108 -E0x200 t0 T120 +e0x8004000
+, hWndhLbxExStyles vLbxExStyles gLbxStylesHandler x82 y138 w430 h384 +0x108 -E0x200 t4 T114 +e0x8004000
 	gui,Add,ListBox
-, hWndhLbxExtraStyles vLbxExtraStyles gLbxStylesHandler x83 y134 w434 h384 +0x108 t0 -E0x200 +e0x8004000 T120 Hidden
-	gui,Add,Edit,	vEdtStyleSum 		x403 y529 w125 h30,0x00000000
-	gui,Add,Edit,	vEdtExStyleSum 		x403 y529 w125 h30 Hidden,0x00000000
-	gui,Add,Edit,	vEdtExtraStyleSum 	x403 y529 w125 h35 Hidden,0x00000000
+, hWndhLbxExtraStyles vLbxExtraStyles gLbxStylesHandler x82 y138 w430 h384 +0x108 t0 -E0x200 +e0x8004000 T114 Hidden
+	gui,Add,Edit,	vEdtStyleSum 		x392 y529 w125 h30,0x00000000
+	gui,Add,Edit,	vEdtExStyleSum 		x392 y529 w125 h30 Hidden,0x00000000
+	gui,Add,Edit,	vEdtExtraStyleSum 	x392 y529 w125 h35 Hidden,0x00000000
 	gui,Font,s8,continuum light
 	gui,Add,Button,	gApplyStyle hwndhapplystyle		x400 y566 w123 h33,% 	"@pply"
 	gui,Add,Button,	gResetStyle  hwndhresetstyle			x400 y599 w123 h33,Reset
@@ -481,28 +506,28 @@ if(A_guiEvent=="N"||trigger) {
 		;SendMessage,0x421,,,,ahk_id %htb2%
 		;win_move(htb1,"","","","",""), win_move(htb2,"","","","","")
 		TB1RePos()
-		TB2RePos()
+		;TB2RePos()
 		SendMessage,0x454,0,0x90,,ahk_id %htb2% ;only dblbuff	;WinAnimate(htb1,"hide slide hpos",80)
 		SendMessage,0x454,0,0x94,,ahk_id %htb1% ;only dblbuff
 		if((dir:=(styletabold>StyleTabCurrent? "hpos" : "hneg"))="hneg"||"hpos") {
 			if((styletabold=12)||(styletabold=StyleTabCurrent)){
 									winshow,ahk_id %htb1%
-									winshow,ahk_id %htb2%
+								;	winshow,ahk_id %htb2%
 			 					winshow,ahk_id %act%
 			 				StyleTabisInit:= True
 						styletabold:= StyleTabCurrent
 					return,
 			} else {
 				winhide,ahk_id %htb1%
-				  winhide,ahk_id %htb2%
+			;	  winhide,ahk_id %htb2%
 				 winhide,ahk_id %act%
 			} Toolbar1update(StyleTabCurrent)
 			 Toolbar2update(StyleTabCurrent)
 			try, {
 			TB1RePos()
 			TB2RePos()
-				 WinAnimate(htb2,"activate slide " dir,50)
-				, WinAnimate(htb1,"activate slide " dir,110)
+			;	 WinAnimate(htb2,"activate slide " dir,50)
+				 WinAnimate(htb1,"activate slide " dir,110)
 				,  WinAnimate(act, "activate slide " dir,200)
 			} Toolbar1update(StyleTabCurrent)
 				Toolbar2update(StyleTabCurrent)
@@ -513,13 +538,13 @@ if(A_guiEvent=="N"||trigger) {
 			Toolbar2update(StyleTabCurrent)
 			if(!StyleTabisInit) {
 				try,winshow,ahk_id %htb1%
-				try,winshow,ahk_id %htb2%
+			;			try,winshow,ahk_id %htb2%
 				try,winshow,ahk_id %act%
 				StyleTabisInit:= True
 			}
 		} else,try,{
 				try,winshow,ahk_id %htb1%
-				try,winshow,ahk_id %htb2%
+				;try,winshow,ahk_id %htb2%
 				try,winshow,ahk_id %act%
 		} styletabold:= StyleTabCurrent
 }	}
@@ -574,9 +599,9 @@ Toolbar1update(il=1) {
 	Toolbar_SetButtSize(htb1,64,64)
 	winset,exstyle,+0x110,ahk_id %htb1%
 	winset,style,+0x9,ahk_id %htb1%
-	TB1RePos() ;SendMessage,0x454,0,0x94,,ahk_id %htb1% ;toolbar extra style double buff+hideclipped+vertical
 	SendMessage,0x454,0,0x94,,ahk_id %htb1%	;win_move(htb1,"","","","")
-	win_move(htb1,442,32,"","","")
+	TB1RePos() ;SendMessage,0x454,0,0x94,,ahk_id %htb1% ;toolbar extra style double buff+hideclipped+vertical
+	;win_move(htb1,442,32,"","","")
 }
 
 
@@ -588,16 +613,16 @@ Toolbar2update(il=4) {
 	Toolbar_SetButtSize(htb2,16,16)
 	winset,exstyle,+0x110,ahk_id %htb2%
 	winset,style,+0x9,ahk_id %htb2%
-	TB2RePos() ;SendMessage,0x454,0,0x90,,ahk_id %hwnd% ;toolbar extra style double buff+hideclipped+vertical
 	win_move(htb2,"","","","")
+	TB2RePos() ;SendMessage,0x454,0,0x90,,ahk_id %hwnd% ;toolbar extra style double buff+hideclipped+vertical
 }
 
 TB1RePos() {
 	global
 	;win_move(htb1,"","","","","")
-	win_move(htb1,442,32,"","","")
+	win_move(htb1,434,32,"","","")
 	SendMessage,0x454,0,0x94,,ahk_id %htb1%
-	win_move(htb1,442,32,"","","")
+	win_move(htb1,434,32,"","","")
 
 }
 
@@ -709,7 +734,16 @@ LoadWindowInfo() {
 		guicontrol,,CPage,% CodeP:= ((CodeP:= DllCall("IsWindowUnicode","Ptr",g_hWnd)="1")
 	? CodeP:="Unicode": CodeP:= "ANSI")
 		guicontrol,,Arch,% Arch:= GetImageType(PiD)
-
+winget,transval,transparent,ahk_id %g_hwnd%
+winget,transcol,transcolor,ahk_id %g_hwnd%
+if (transval)
+		guicontrol,,transval,% transval
+	else 		guicontrol,,transval, Opaque
+if (transcol)
+		guicontrol,,transcol,% transcol
+else guicontrol,,transcol,None
+	guicontrol,,% hdwmchk ,1
+guicontrol,,ahkchildrentruefalse,FALSE
 	switch,dpimode:= dllcall("GetAwarenessFromDpiAwarenessContext","int"
 		,	 dllcall("GetWindowDpiAwarenessContext","int",g_hWnd,"ptr"),"int")
 	{
@@ -1947,6 +1981,70 @@ if(g_Topmost!="0") {
 } ;else {
 	;winset,alwaysontop,off,ahk_id %hSpyWnd% 	;StyleSet(hSpyWnd,"+0x80000000")
 ;}
+return,
+
+
+Showsetregion:
+p:= GetWindowPlacement(hSpyWnd)
+if(WinExist("ahk_id" . hsetregion)) {
+	if(!IsWindowVisible(hsetregion)) {
+		; if g_Topmost
+			;gui,XYWH:+alwaysontop 
+		gui,XYWH:Show,% "x" p.x +p.w " y" p.y+128 "w429 h170 hide",% "Position and Size"
+		WinAnimate(hsetregion,"activate slide hpos",200)
+		winset,top,,ahk_id %hspywnd%
+		SetWindowIcon(hsetregion,"C:\Script\AHK\- Script\WinSpy\Resources\tree.ico")
+	} else {
+		WinAnimate(hsetregion,"hide slide hneg",200)
+		gui,XYWH:destroy
+	}
+	return,
+} else {
+;	if(opAlwaysOnTop)
+	;aoot:= " +alwaysontop "
+	gui,XYWH:New,-dpiscale +toolwindow -resize -0x400000 +0x40000 hwndhxywh ;%aoot% 
+	; if g_Topmost
+		; gui,XYWH:+alwaysontop +E0x8 
+	;gui,Font,s9,Segoe UI
+	;gui,Color,black
+;	gui,Add,GroupBox,x10 y6 w145 h115,% "Relative to:"
+;	gui,Add,Radio,hwndhClientCoords vClientCoords gSetXYWH x15 y27 w120 h23 +Checked,% "Client area"
+;	gui,Add,Radio,hwndhWindowCoords vWindowCoords  gSetXYWH x15 y60 w130 h23,% "Window border"
+;	gui,Add,Radio,hwndhScreenCoords vScreenCoords gSetXYWH x15 y92 w130 h23,% "Screen coords"
+;	gui,Add,GroupBox,x166 y5 w253 h115
+;	gui,Add,Text,x182 y31 w26 h23 +0x200,% "X:"
+;	gui,Add,Edit,vEdtX x209 y31 w70 h21
+;	gui,Add,UpDown,gMoveWindow Range-64000-64000 +0x80
+;	gui,Add,Text,x303 y31 w26 h23 +0x200,% "Y:"
+;	gui,Add,Edit,vEdtY x330 y31 w70 h21
+;	gui,Add,UpDown,gMoveWindow Range-64000-64000 +0x80
+;	gui,Add,Text,x182 y78 w26 h23 +0x200,% "W:"
+;	gui,Add,Edit,vEdtW x209 y78 w70 h21
+;	gui,Add,UpDown,gMoveWindow Range-64000-64000 +0x80
+;	gui,Add,Text,x303 y78 w26 h23 +0x200,% "H:"
+;	gui,Add,Edit,vEdtH x330 y78 w70 h21
+;	gui,Add,UpDown,gMoveWindow Range-64000-64000 +0x80
+;	gui,Add,Text,x-1 y121 w460 h49 +0x200 -Background +Border
+;	gui,Add,Button,gResetXYWH x9 y144 w88 h39,% "&Reset"
+;	gui,Add,Button,gMoveWindow x235 y138 w88 h39 +Default,% "&Apply"
+;	gui,Add,Button,gXYWHClose x331 y138 w88 h39,% "&Close"
+;	gui,Show,% "na hide x" p.x +p.w " y" p.y+128 "w429 h189",% "Position and Size"
+;	WinAnimate(hxywh,"activate slide hpos",200), g_NewXYWH:= True
+;	winset,style,-0x80000000,ahk_id %hxywh%
+;	winset,style,-0x80000000,ahk_id %hxywh%
+;	winset,style,+0x40000000,ahk_id %hxywh%
+	gui,XYWH: +MinSize429x189 +MaxSize429x189 ;winactivate,ahk_id %hspywnd%
+	;loop,parse,% "hxywh,hSettingsDlg",`,
+	;{
+;	gk:= %a_loopField%
+	;	winset,top,,ahk_id %gk%
+;	} GoSub,gosetregion
+	
+} return,
+
+setregionClose:
+setregionEscape:
+;gui,setregion:Destroy
 return,
 
 SetMinimize:
@@ -3421,7 +3519,7 @@ OnWM_LBUTTONUP(wParam="",lParam="",msg="",hWnd="") {
 	global Moving, movestart
 	static SPI_SetCurSORS=0x57
 	ymove:= ymove_offset:= xmove:= xmove_offset:= ""
-	DllCall("SystemParametersInfo","uint",SPI_SetCurSORS,"uint",0,"ptr",0,"uint",0)
+	DllCall("SystemParametersInfo","uint",0x57,"uint",0,"ptr",0,"uint",0)
 	if(dragging) {
 		Loop,4
 			try,gui,% A_Index +90 ":hide"
@@ -3633,11 +3731,11 @@ global AppName, alien, r_PID, sep, spyy, CurChanged:=0, TreeIcons:= ResDir . "\T
 , hTreeWnd:=0, htab, hLbx, hLbxExStyles, hLbxExtraStyles, hLbxStyles, SbarhWnd, hBtnCmds, gpos, hfkuu2
 , ProcTxT ,fukbk ,hfukbk2, lasttrig, hBtn1, hBtn2, hBtn3, hBtn4, hBtn5, ht1b4, ht1b1, hClientCoords, hWindowCoords, hScreenCoords
 , dHWCheck, tOPMCheck, spyy, xres, yres, r3gk3y, sep, ImageList, args, _msg, TrigG, TrayActiv, parent, ChangeToIcon, oldtimereset
-, hSpyWnd,  hCommandsMenu, hTab, htb, htb2, htb1, p2pwnd, hCloseButt1, hCloseButt2, StyleTabCurrent
+, hSpyWnd,  hCommandsMenu, hTab, htb, htb2, htb1, p2pwnd, hCloseButt1, hCloseButt2, StyleTabCurrent,Transcol, Transval, g_dwmcomposition
 , trigger, Moving, StyleTabisInit, hRemParentButton2, hRemParentButton1, hresetstyle, happlystyle, htabhslider, TabHeightSlider, hIL4
-, hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg
+, hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg, hdwmchk 
 , hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogicon, CloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, htabbody
-, g_ExtraStyle, g_Minimized, g_Minimize, g_Topmost, g_DetectHiddn, g_hWnd, g_Style, g_ExStyle
+, g_ExtraStyle, g_Minimized, g_Minimize, g_Topmost, g_DetectHiddn, g_hWnd, g_Style, g_ExStyle, ahkchildrentruefalse
 , g_MouseCoordMode:= "Screen", SubWin_VisibleCount, xmove, xmove_offset, ymove, ymovemove_offset, bbounce
 global g_WinMsgs:= "", SYSGUI_TBbUTTSZ1:= 64, SYSGUI_TBbUTTSZ2:= 24, _s:= " ", pxx, pyy, xxx:= 1
 , g_Borders:= [], oStyles:= {}, Cursors:= {}, hOldCursor, hOldCursor2, hOldWnd, oldparents:= [], styletabold:= 12, inde_x:= 0
