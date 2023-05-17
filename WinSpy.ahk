@@ -1,6 +1,6 @@
 ﻿st:= a_tickcount
 #NoEnv		;;__winc3_Pi3;;_-WinS_pi_(M)_-_Window-Info-Tool__::
-#MaxMem	640	;;__Fork3d_n_bork3d_by_M.Wolff__2020__-__2022_-__::
+;#MaxMem	640	;;__Fork3d_n_bork3d_by_M.Wolff__2020__-__2022_-__::
 #notrayicon
 #KeyHistory	0
 #SingleInstance,Off
@@ -171,7 +171,7 @@ WinAnimate(img["Banner1"].hpic,"activate center",70)
 return,
 
 Spy: ;Main Window;
-TabHeightSlider:=29 
+TabHeightSlider:=29
 	gtop:= g_Topmost? " +alwaysontop " : ""
 	gui,Spy:New,-dpiscale hWndhSpyWnd +lastfound +toolwindow +resize +0x94CC004C -0x400000 +e0x00010101" %gtop% ; " ;e0x00010101 ;gui,color,772299 0x568F0000
 	winget,fp,processpath,ahk_id %hSpyWnd%
@@ -192,13 +192,13 @@ TabHeightSlider:=29
 	guicontrol,Hide,% img["Banner3"].hpic
 	img["CloseButt1"].hpic:= hCloseButt1, img["CloseButt2"].hpic:= hCloseButt2
 	gui,Font,s9,continuum light ;msgbox,% g_Topmost
-	gui,Add,CheckBox,% "hwndtOPMCheck gSetTopMost vg_Topmost x370 y7" ,% "&UI-Band"
-	gui,Add,CheckBox,% "hwnddHWCheck gSetDHW      x370 y37",% "&Find-hidden"
-	gui,Font,s8,continuum medium 
+	gui,Add,CheckBox,% "hwndtOPMCheck gSetTopMost check3 vg_Topmost x370 y7" ,% "&UI-Band"
+	gui,Add,CheckBox,% "hwnddHWCheck gSetDHW check3 				 x370 y37",% "&Find-hidden"
+	gui,Font,s8,continuum medium
 	gui,Add,Tab3,% "+hWndhTab vTab gTabHandler x7 y" Tab_Y " w" G_SPY_W-24 " h574 AltSubmit -Wrap +e0x2000000 +0x2000000"
 	,% "  General  |  Detail  |  WM's  | Extra | Windows |  Styles  "
 	GUIControl,,%hTab%
-	TAB_SetItemSize(hTab,,TabHeightSlider)	
+	TAB_SetItemSize(hTab,,TabHeightSlider)
 	Tab_Y:= Tab_Y_init+ TabHeightSlider-22
 	gui,Font,s9,continuum light
 	StyleSet(hSpyWnd,"+0x80000000")
@@ -251,8 +251,8 @@ gui,Tab,1 ;General;
 	gui,Add,Edit,	x420 y566 w146 h24 vahkchildrentruefalse -E0x200	ReadOnly
 	gui,Add,Text,	x20 y567 w93 h24 +0x200,%			"TransColor:"
 	gui,Add,Edit,	x120 y569 w146 h24 vTranscol   -E0x200	ReadOnly
-	gui,Add,Text,	x20 y598 w93 h24 +0x200,%		"Opacity:"	
-	gui,Add,Edit,	x120 y600 w146 h24 vTransval   -E0x200	ReadOnly 
+	gui,Add,Text,	x20 y598 w93 h24 +0x200,%		"Opacity:"
+	gui,Add,Edit,	x120 y600 w146 h24 vTransval   -E0x200	ReadOnly
 	loop,parse,% "settxt,cmds,mag16,change",`,
 	{
 		hwnd=% (ht1b%a_index%)
@@ -262,7 +262,7 @@ gui,Tab,1 ;General;
 			case,"mag16": Pos:="left"
 		} SetButtonIcon(hwnd,icon,index,pos)
 	} gui,Font,s8,continuum light
-	LV_ModifyCol(1,110), LV_ModifyCol(2,375)
+	LV_ModifyCol(1,99), LV_ModifyCol(2,390)
 	gui,Add,Button,+hwndhbuttendprocess gEndProcess x265 y595 w124 h35,% "End Process"
 	gui,Add,Button,+hwndhopenfolder gOpenFolder x390 y595 w124 h35,% "Open Folder"
 	winset,exstyle,+0x2000000,ahk_id %hProgIcon%
@@ -467,12 +467,12 @@ TabHandler(Tab) {
 		case,"6" : trigger:= True ;sleep,100;
 			TB1RePos()
 			TB2RePos()
-			
+
 			settimer,StylesTabHandler,-1	;WinSet,RedRaw,,ahk_id %hStylesTab%;
 			sleep 50
 			TB1RePos()
 			TB2RePos()
-			
+
 	}
 }
 
@@ -1989,7 +1989,7 @@ p:= GetWindowPlacement(hSpyWnd)
 if(WinExist("ahk_id" . hsetregion)) {
 	if(!IsWindowVisible(hsetregion)) {
 		; if g_Topmost
-			;gui,XYWH:+alwaysontop 
+			;gui,XYWH:+alwaysontop
 		gui,XYWH:Show,% "x" p.x +p.w " y" p.y+128 "w429 h170 hide",% "Position and Size"
 		WinAnimate(hsetregion,"activate slide hpos",200)
 		winset,top,,ahk_id %hspywnd%
@@ -2002,9 +2002,9 @@ if(WinExist("ahk_id" . hsetregion)) {
 } else {
 ;	if(opAlwaysOnTop)
 	;aoot:= " +alwaysontop "
-	gui,XYWH:New,-dpiscale +toolwindow -resize -0x400000 +0x40000 hwndhxywh ;%aoot% 
+	gui,XYWH:New,-dpiscale +toolwindow -resize -0x400000 +0x40000 hwndhxywh ;%aoot%
 	; if g_Topmost
-		; gui,XYWH:+alwaysontop +E0x8 
+		; gui,XYWH:+alwaysontop +E0x8
 	;gui,Font,s9,Segoe UI
 	;gui,Color,black
 ;	gui,Add,GroupBox,x10 y6 w145 h115,% "Relative to:"
@@ -2039,7 +2039,7 @@ if(WinExist("ahk_id" . hsetregion)) {
 ;	gk:= %a_loopField%
 	;	winset,top,,ahk_id %gk%
 ;	} GoSub,gosetregion
-	
+
 } return,
 
 setregionClose:
@@ -2056,7 +2056,7 @@ p:= GetWindowPlacement(hSpyWnd)
 if(WinExist("ahk_id" . hxywh)) {
 	if(!IsWindowVisible(hxywh)) {
 		; if g_Topmost
-			;gui,XYWH:+alwaysontop 
+			;gui,XYWH:+alwaysontop
 		gui,XYWH:Show,% "x" p.x +p.w " y" p.y+128 "w429 h170 hide",% "Position and Size"
 		WinAnimate(hxywh,"activate slide hpos",200)
 		winset,top,,ahk_id %hspywnd%
@@ -2069,9 +2069,9 @@ if(WinExist("ahk_id" . hxywh)) {
 } else {
 ;	if(opAlwaysOnTop)
 	;aoot:= " +alwaysontop "
-	gui,XYWH:New,-dpiscale +toolwindow -resize -0x400000 +0x40000 hwndhxywh ;%aoot% 
+	gui,XYWH:New,-dpiscale +toolwindow -resize -0x400000 +0x40000 hwndhxywh ;%aoot%
 	; if g_Topmost
-		; gui,XYWH:+alwaysontop +E0x8 
+		; gui,XYWH:+alwaysontop +E0x8
 	;gui,Font,s9,Segoe UI
 	;gui,Color,black
 	gui,Add,GroupBox,x10 y6 w145 h115,% "Relative to:"
@@ -2106,7 +2106,7 @@ if(WinExist("ahk_id" . hxywh)) {
 		gk:= %a_loopField%
 		winset,top,,ahk_id %gk%
 	} GoSub,SetXYWH
-	
+
 } return,
 
 XYWHClose:
@@ -2117,7 +2117,7 @@ return,
 SetXYWH:
 if(IsChild(g_hWnd)) {
 		guicontrol,Enable,% hClientCoords
-		guicontrol,Enable,% hWindowCoords 
+		guicontrol,Enable,% hWindowCoords
 		guicontrol,Enable,% hScreenCoords
 } else {
 		guicontrol,Disable,% hClientCoords
@@ -2657,7 +2657,7 @@ if(Enum[Process]) {
 	, LV_Add("","Started",CreationDate) ;LV_Add("","Image Type",GetImageType(PID))
 	, LV_Add("","Process ID",Process.ProcessId)
 	, LV_Add("","Thread ID",DllCall("GetWindowThreadProcessId","Ptr",g_hWnd,"Ptr",0))
-	, LV_Add("","Working Set",FormatBytes(Process.WorkingSetSize,Sep,"mb"))
+	, LV_Add("","WorkSet",FormatBytes(Process.WorkingSetSize,Sep,"mb"))
 }
 return,
 
@@ -3136,16 +3136,17 @@ RedRaww(){
 
 CheckChecks:
 if(g_Topmost){
-	;guicontrol,,% topmcheck,1
-	SendMessage,0xF3,2,0,,% "ahk_id " topmcheck ;BM_SETSTATE
+msgbox gtop
+	guicontrol,,% topmcheck,0
+	guicontrol,,% topmcheck,-1
+	;SendMessage,0xF3,2,0,,% "ahk_id " topmcheck ;BM_SETSTATE
 	;SendMessage,0xF1,2,0,,% "ahk_id " topmcheck ;BM_SETSTATE
-
 	;loop,parse,% "hSettingsDlg,hxywhhScrollInfo,hFindDlg,hTreeWnd",`,
 	;	winset,top,,% "ahk_id " %a_loopField%
-}
-if(g_DetectHiddn)
-	guicontrol,,% dhwcheck,1
-	SendMessage,0xF3,2,0,,% "ahk_id " dhwcheck ;BM_SETSTATE
+} if(g_DetectHiddn)
+	guicontrol,,% dhwcheck,0
+	guicontrol,,% dhwcheck,-1
+	;SendMessage,0xF3,2,0,,% "ahk_id " dhwcheck ;BM_SETSTATE
 	;SendMessage,0xF1,2,0,,% "ahk_id " dhwcheck ;BM_SETSTATE
 
 return,
@@ -3388,7 +3389,7 @@ tt(TabHeightSlider)
 				gui,settings:submit,nohide
 
 		default  : TT(wParam,4)
-		return, 
+		return,
 	}
 }
 
@@ -3417,7 +3418,7 @@ OnWM_RBUTTONDOWN(wParam,lParam,msg,hWnd) {
 		return,
 }	}
 
-~#g:: 
+~#g::
 if(bbounce:=!bbounce)
 	settimer,bb,1
 else {
@@ -3712,7 +3713,7 @@ Reg_Read:
 RegRead,Sep,HKEY_CURRENT_USER\Control Panel\International,sThousand
  ((Sep="")? Sep:= ".")
 r3gk3y:="HKCU\SOFTWARE\_MW\WinP5y"
-return, 
+return,
 loop,parse,% "varnames-opt_,MaxFill,alignment,,,,",`,
 	regread,  OPT_%a_loopfield%,% r3gk3y, %a_loopfield%
 loop,parse,% "netx,nety,varnames,,",`,
@@ -3733,36 +3734,36 @@ global AppName, alien, r_PID, sep, spyy, CurChanged:=0, TreeIcons:= ResDir . "\T
 , dHWCheck, tOPMCheck, spyy, xres, yres, r3gk3y, sep, ImageList, args, _msg, TrigG, TrayActiv, parent, ChangeToIcon, oldtimereset
 , hSpyWnd,  hCommandsMenu, hTab, htb, htb2, htb1, p2pwnd, hCloseButt1, hCloseButt2, StyleTabCurrent,Transcol, Transval, g_dwmcomposition
 , trigger, Moving, StyleTabisInit, hRemParentButton2, hRemParentButton1, hresetstyle, happlystyle, htabhslider, TabHeightSlider, hIL4
-, hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg, hdwmchk 
+, hbuttpostmsg, hbuttsendmsg, hopenfolder,hbuttendprocess,hRemParentButton1, hCbxMsg, hStylesTab, hxywh, hSettingsDlg, hdwmchk
 , hWindowsTab, hFinda1, hFindDlg, hScrollInfo, hprogicon, CloseButtShowLIT, hBorderColorPrev, hWndmm, hWndnn, htabbody
 , g_ExtraStyle, g_Minimized, g_Minimize, g_Topmost, g_DetectHiddn, g_hWnd, g_Style, g_ExStyle, ahkchildrentruefalse
 , g_MouseCoordMode:= "Screen", SubWin_VisibleCount, xmove, xmove_offset, ymove, ymovemove_offset, bbounce
 global g_WinMsgs:= "", SYSGUI_TBbUTTSZ1:= 64, SYSGUI_TBbUTTSZ2:= 24, _s:= " ", pxx, pyy, xxx:= 1
 , g_Borders:= [], oStyles:= {}, Cursors:= {}, hOldCursor, hOldCursor2, hOldWnd, oldparents:= [], styletabold:= 12, inde_x:= 0
-, Dragging:= False 
+, Dragging:= False
 , Workaround:= True
 , FindDlgExist:= False
 , g_TreeShowAll:= False
 , MenuViewerExist:= False, g_findgui_isopen, CloseButtShowLIT
 , Img:=[]
   img["cur_link"]:= DllCall("LoadImage","Int",0,"Str",ResDir "\Link.cur","Int",2,"Int",56,"Int",56,"UInt",0x10,"Ptr")
-  img["ani_syringe"]:= DllCall("LoadImage","Int",0,"Str", ResDir "\INJEX2.ANI", "Int",2,"Int",56,"Int",56,"UInt",0x10,"Ptr")
-, img["finda1"]:= DllCall("LoadImage","Int",0,"Str",ResDir "\INJEX.ANI","Int",2,"Int",64,"Int",64,"UInt",0x10,"Ptr")
 , img["Banner1"]:= ({"Path" : path:= ResDir "\PsyCho515-nq8.png","xoff" : 65,  "yoff" : 3})
 , img["Banner2"]:= ({"Path" : path:= ResDir "\PsyCho618-nq8.png","Xoff" : 65, "Yoff" : 3})
 , img["Banner3"]:= ({"Path" : path:= ResDir "\o\p5yb4n (17).png", "Xoff" : 65, "Yoff" : 3}) ;multi
 , img["Banner4"]:= ({"Path" : path:= ResDir "\o\p5yb4n (37).png","Xoff" : 65, "Yoff" : 3}) ;pink
 , img["Banner5"]:= ({"Path" : path:= ResDir "\o\Clipboarder.2023.03.30-013.png","Xoff" : 65, "Yoff" : 3})
+, img["notepad++.exe"]	:= ico2hicon("C:\Icon\64ribbon\notepad_64_32.ico") ;notepad++.exe
+, img["ico_EyeOpn48"]:=ico2hicon("C:\Script\AHK\- Script\WinSpy\Resources\eyeopen48.ico")
+  img["ani_syringe"]:= DllCall("LoadImage","Int",0,"Str", ResDir "\INJEX2.ANI", "Int",2,"Int",56,"Int",56,"UInt",0x10,"Ptr")
 , img["CloseButt1"]	:= ResDir "\CloseButt1-nq8.png"
 , img["CloseButt2"]	:= ResDir "\CloseButt2-nq8.png"
 , img["CloseButt3"]	:= ResDir "\closebuttcross.png"
-, img["program"]	:= ico2hicon("C:\Icon\256\keetk.ico")
-, img["ico_EyeOpn48"]:=ico2hicon("C:\Script\AHK\- Script\WinSpy\Resources\eyeopen48.ico")
-, img["ico_Eye48"]	:= ico2hicon("C:\Script\AHK\- Script\WinSpy\Resources\iiiclo48.ico")
-, img["ico_ahk"]	:= ico2hicon("C:\Icon\256\Autism5.ico")
-, img["steam"]	:= ico2hicon("C:\Icon\64ribbon\st33m64_32 (2).ico") ;steamwebhelper.exe
-, img["notepad++.exe"]	:= ico2hicon("C:\Icon\64ribbon\notepad_64_32.ico") ;notepad++.exe
 , img["SndVol.exe"]	:= ico2hicon("C:\Icon\64ribbon\sndvol_64_48_32.ico") ;steamwebhelper.exe
+, img["ico_Eye48"]	:= ico2hicon("C:\Script\AHK\- Script\WinSpy\Resources\iiiclo48.ico")
+, img["program"]	:= ico2hicon("C:\Icon\256\keetk.ico")
+, img["ico_ahk"]	:= ico2hicon("C:\Icon\256\Autism5.ico")
+, img["finda1"]:= DllCall("LoadImage","Int",0,"Str",ResDir "\INJEX.ANI","Int",2,"Int",64,"Int",64,"UInt",0x10,"Ptr")
+, img["steam"]	:= ico2hicon("C:\Icon\64ribbon\st33m64_32 (2).ico") ;steamwebhelper.exe
 , icon_arr:= []
 Loop,Reg,% "HKCU\Software\_MW\Icons\pn",KV
 {
